@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:habithub/views/Auth_views/welcome_view.dart';
+import 'package:habithub/views/Authentication_Module/welcome_view.dart';
 
 class SplashScreenView extends StatefulWidget {
   const SplashScreenView({super.key});
