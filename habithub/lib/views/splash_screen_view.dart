@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:habithub/views/Auth_views/welcome_view.dart';
 
 class SplashScreenView extends StatefulWidget {
   const SplashScreenView({super.key});
@@ -12,18 +13,24 @@ class _SplashScreenViewState extends State<SplashScreenView> {
   int filledBoxes = 0;
   Timer? timer;
 
- @override
+  @override
   void initState() {
     super.initState();
 
-    timer = Timer.periodic(
-      const Duration(milliseconds: 400),
-      (timer) {
-        setState(() {
-          filledBoxes = (filledBoxes + 1) % 5;
-        });
-      },
-    );
+    // Animation Timer
+    timer = Timer.periodic(const Duration(milliseconds: 400), (timer) {
+      setState(() {
+        filledBoxes = (filledBoxes + 1) % 5;
+      });
+    });
+
+    // Navigation Timer
+    Timer(const Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const WelcomeView()),
+      );
+    });
   }
 
   @override
@@ -31,7 +38,6 @@ class _SplashScreenViewState extends State<SplashScreenView> {
     timer?.cancel();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -41,17 +47,13 @@ class _SplashScreenViewState extends State<SplashScreenView> {
       body: SafeArea(
         child: Center(
           child: Column(
-            mainAxisAlignment:
-                MainAxisAlignment.center, // Center vertically
+            mainAxisAlignment: MainAxisAlignment.center, // Center vertically
             children: [
               // Logo
               SizedBox(
-                height: 120,
-                width: 120,
-                child: Image.asset(
-                  'assets/logo.png',
-                  fit: BoxFit.contain,
-                ),
+                height: 200,
+                width: 200,
+                child: Image.asset('assets/logo.png', fit: BoxFit.contain),
               ),
 
               const SizedBox(height: 24),
@@ -81,18 +83,18 @@ class _SplashScreenViewState extends State<SplashScreenView> {
               const SizedBox(height: 40),
 
               // Contribution Boxes
-             Row(
-  mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    _buildBox(0),
-    const SizedBox(width: 8),
-    _buildBox(1),
-    const SizedBox(width: 8),
-    _buildBox(2),
-    const SizedBox(width: 8),
-    _buildBox(3),
-  ],
-),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildBox(0),
+                  const SizedBox(width: 8),
+                  _buildBox(1),
+                  const SizedBox(width: 8),
+                  _buildBox(2),
+                  const SizedBox(width: 8),
+                  _buildBox(3),
+                ],
+              ),
             ],
           ),
         ),
@@ -100,16 +102,17 @@ class _SplashScreenViewState extends State<SplashScreenView> {
     );
   }
 
-/// Contribution Box Widget
-Widget _buildBox(int index) {
-  return Container(
-    height: 18,
-    width: 18,
-    decoration: BoxDecoration(
-      color: index < filledBoxes
-          ? const Color(0xFF22C55E) // Green
-          : const Color(0xFF334155), // Gray
-      borderRadius: BorderRadius.circular(5),
-    ),
-  );
-}}
+  /// Contribution Box Widget
+  Widget _buildBox(int index) {
+    return Container(
+      height: 18,
+      width: 18,
+      decoration: BoxDecoration(
+        color: index < filledBoxes
+            ? const Color(0xFF22C55E) // Green
+            : const Color(0xFF334155), // Gray
+        borderRadius: BorderRadius.circular(5),
+      ),
+    );
+  }
+}
