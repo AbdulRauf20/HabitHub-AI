@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habithub/core/theme/app_colors.dart';
+import 'package:habithub/views/Authentication_Module/login_view.dart';
 
 class WelcomeView extends StatefulWidget {
   const WelcomeView({super.key});
@@ -138,7 +139,14 @@ class _WelcomeViewState extends State<WelcomeView> {
                 width: MediaQuery.of(context).size.width * 0.5,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginView(),
+                      ),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.buttonSecondaryBackground,
                     foregroundColor: AppColors.textPrimary,
