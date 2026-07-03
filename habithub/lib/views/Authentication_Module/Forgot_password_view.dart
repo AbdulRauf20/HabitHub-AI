@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habithub/core/theme/app_colors.dart';
 import 'package:habithub/views/Authentication_Module/login_view.dart';
-import 'package:habithub/views/Authentication_Module/signup_view.dart';
 
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({super.key});
