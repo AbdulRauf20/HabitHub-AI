@@ -49,7 +49,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                     height: 7,
                     width: 25,
                     child: const DecoratedBox(
-                      decoration: BoxDecoration(color: AppColors.card),
+                      decoration: BoxDecoration(color: AppColors.primary),
                     ),
                   ),
                   const SizedBox(width: 5),
