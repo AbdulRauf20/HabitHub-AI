@@ -47,6 +47,7 @@ class _SignUpViewState extends State<SignUpView> {
                       decoration: BoxDecoration(color: AppColors.primary),
                     ),
                   ),
+                  SizedBox(width: 5),
                   SizedBox(
                     height: 7,
                     width: 25,
@@ -54,6 +55,8 @@ class _SignUpViewState extends State<SignUpView> {
                       decoration: BoxDecoration(color: AppColors.card),
                     ),
                   ),
+                  SizedBox(width: 5),
+
                   SizedBox(
                     height: 7,
                     width: 25,
@@ -244,6 +247,8 @@ class _SignUpViewState extends State<SignUpView> {
                       decoration: BoxDecoration(color: AppColors.primary),
                     ),
                   ),
+                  SizedBox(width: 5),
+
                   SizedBox(
                     height: 7,
                     width: 25,
@@ -251,6 +256,8 @@ class _SignUpViewState extends State<SignUpView> {
                       decoration: BoxDecoration(color: AppColors.card),
                     ),
                   ),
+                  SizedBox(width: 5),
+
                   SizedBox(
                     height: 7,
                     width: 25,
@@ -316,7 +323,14 @@ class _SignUpViewState extends State<SignUpView> {
                 width: double.infinity,
                 height: 58,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                   Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const WelcomeView(),
+                        ),
+                      );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: AppColors.buttonPrimaryText,
