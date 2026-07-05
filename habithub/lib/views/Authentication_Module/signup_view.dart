@@ -325,12 +325,12 @@ class _SignUpViewState extends State<SignUpView> {
                 height: 58,
                 child: ElevatedButton(
                   onPressed: () {
-                   Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const VerifyEmailView(),
-                        ),
-                      );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const VerifyEmailView(),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,

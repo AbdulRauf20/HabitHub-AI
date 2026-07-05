@@ -11,7 +11,7 @@ class CompleteProfileView extends StatefulWidget {
 
 class _CompleteProfileViewState extends State<CompleteProfileView> {
   String selectedGender = "male";
-String selectedGoal = "Build Better Habits";
+  String selectedGoal = "Build Better Habits";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,223 +67,224 @@ String selectedGoal = "Build Better Habits";
                 ],
               ),
               const SizedBox(height: 45),
-
-              const Text(
-                "FINAL STEP",
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.5,
-                ),
-              ),
-              RichText(
-                text: const TextSpan(
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextSpan(
-                      text: "Make it ",
-                      style: TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 15,
-                      ),
-                    ),
-                    TextSpan(
-                      text: "yours",
+                    const Text(
+                      "FINAL STEP",
                       style: TextStyle(
                         color: AppColors.primary,
+                        fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                        letterSpacing: 1.5,
                       ),
+                    ),
+                    const SizedBox(height: 10),
+                    RichText(
+                      text: const TextSpan(
+                        children: [
+                          TextSpan(
+                            text: "Make it ",
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 25,
+                            ),
+                          ),
+                          TextSpan(
+                            text: "yours",
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            // We'll add image picker functionality later.
+                          },
+                          child: CircleAvatar(
+                            radius: 55,
+                            backgroundColor: AppColors.card,
+                            child: const Icon(
+                              Icons.add_a_photo_rounded,
+                              size: 35,
+                              color: AppColors.iconSecondary,
+                            ),
+                          ),
+                        ),
+                
+                        const SizedBox(height: 12),
+                
+                        const Text(
+                          "Add Photo",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              Column(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      // We'll add image picker functionality later.
-                    },
-                    child: CircleAvatar(
-                      radius: 55,
-                      backgroundColor: AppColors.card,
-                      child: const Icon(
-                        Icons.add_a_photo_rounded,
-                        size: 35,
-                        color: AppColors.iconSecondary,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  const Text(
-                    "Add Photo",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ],
-              ),
 
               TextField(
-  maxLines: 5,
-  style: const TextStyle(
-    color: AppColors.textPrimary,
-  ),
-  decoration: InputDecoration(
-    hintText: "Tell us about yourself...",
-    hintStyle: TextStyle(
-      color: AppColors.textSecondary.withValues(alpha: 0.6),
-    ),
-    filled: true,
-    fillColor: AppColors.card,
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
-      borderSide: BorderSide.none,
-    ),
-  ),
-),
-const SizedBox(height: 24),
+                maxLines: 5,
+                style: const TextStyle(color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  hintText: "Tell us about yourself...",
+                  hintStyle: TextStyle(
+                    color: AppColors.textSecondary.withValues(alpha: 0.6),
+                  ),
+                  filled: true,
+                  fillColor: AppColors.card,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
 
-const Text(
-  "Gender",
-  style: TextStyle(
-    color: AppColors.textPrimary,
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-  ),
-),
+              const Text(
+                "Gender",
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
 
-const SizedBox(height: 8),
+              const SizedBox(height: 8),
 
-RadioListTile<String>(
-  title: const Text(
-    "Male",
-    style: TextStyle(color: AppColors.textPrimary),
-  ),
-  value: "male",
-  groupValue: selectedGender,
-  activeColor: AppColors.primary,
-  onChanged: (value) {
-    setState(() {
-      selectedGender = value!;
-    });
-  },
-),
+              RadioListTile<String>(
+                title: const Text(
+                  "Male",
+                  style: TextStyle(color: AppColors.textPrimary),
+                ),
+                value: "male",
+                groupValue: selectedGender,
+                activeColor: AppColors.primary,
+                onChanged: (value) {
+                  setState(() {
+                    selectedGender = value!;
+                  });
+                },
+              ),
 
-RadioListTile<String>(
-  title: const Text(
-    "Female",
-    style: TextStyle(color: AppColors.textPrimary),
-  ),
-  value: "female",
-  groupValue: selectedGender,
-  activeColor: AppColors.primary,
-  onChanged: (value) {
-    setState(() {
-      selectedGender = value!;
-    });
-  },
-),
+              RadioListTile<String>(
+                title: const Text(
+                  "Female",
+                  style: TextStyle(color: AppColors.textPrimary),
+                ),
+                value: "female",
+                groupValue: selectedGender,
+                activeColor: AppColors.primary,
+                onChanged: (value) {
+                  setState(() {
+                    selectedGender = value!;
+                  });
+                },
+              ),
 
-RadioListTile<String>(
-  title: const Text(
-    "Prefer not to say",
-    style: TextStyle(color: AppColors.textPrimary),
-  ),
-  value: "prefer_not_to_say",
-  groupValue: selectedGender,
-  activeColor: AppColors.primary,
-  onChanged: (value) {
-    setState(() {
-      selectedGender = value!;
-    });
-  },
-),
+              RadioListTile<String>(
+                title: const Text(
+                  "Prefer not to say",
+                  style: TextStyle(color: AppColors.textPrimary),
+                ),
+                value: "prefer_not_to_say",
+                groupValue: selectedGender,
+                activeColor: AppColors.primary,
+                onChanged: (value) {
+                  setState(() {
+                    selectedGender = value!;
+                  });
+                },
+              ),
 
-const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-const Text(
-  "Primary Goal",
-  style: TextStyle(
-    color: AppColors.textPrimary,
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-  ),
-),
+              const Text(
+                "Primary Goal",
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
 
-const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-DropdownButtonFormField<String>(
-  value: selectedGoal,
-  dropdownColor: AppColors.surface,
-  style: const TextStyle(
-    color: AppColors.textPrimary,
-  ),
-  decoration: InputDecoration(
-    filled: true,
-    fillColor: AppColors.card,
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
-      borderSide: BorderSide.none,
-    ),
-  ),
-  items: const [
-    DropdownMenuItem(
-      value: "Build Better Habits",
-      child: Text("Build Better Habits"),
-    ),
-    DropdownMenuItem(
-      value: "Fitness & Health",
-      child: Text("Fitness & Health"),
-    ),
-    DropdownMenuItem(
-      value: "Study Consistently",
-      child: Text("Study Consistently"),
-    ),
-    DropdownMenuItem(
-      value: "Increase Productivity",
-      child: Text("Increase Productivity"),
-    ),
-    DropdownMenuItem(
-      value: "Improve Sleep",
-      child: Text("Improve Sleep"),
-    ),
-  ],
-  onChanged: (value) {
-    setState(() {
-      selectedGoal = value!;
-    });
-  },
-),
+              DropdownButtonFormField<String>(
+                value: selectedGoal,
+                dropdownColor: AppColors.surface,
+                style: const TextStyle(color: AppColors.textPrimary),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: AppColors.card,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                items: const [
+                  DropdownMenuItem(
+                    value: "Build Better Habits",
+                    child: Text("Build Better Habits"),
+                  ),
+                  DropdownMenuItem(
+                    value: "Fitness & Health",
+                    child: Text("Fitness & Health"),
+                  ),
+                  DropdownMenuItem(
+                    value: "Study Consistently",
+                    child: Text("Study Consistently"),
+                  ),
+                  DropdownMenuItem(
+                    value: "Increase Productivity",
+                    child: Text("Increase Productivity"),
+                  ),
+                  DropdownMenuItem(
+                    value: "Improve Sleep",
+                    child: Text("Improve Sleep"),
+                  ),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    selectedGoal = value!;
+                  });
+                },
+              ),
 
-const SizedBox(height: 32),
+              const SizedBox(height: 32),
 
-SizedBox(
-  width: double.infinity,
-  height: 56,
-  child: ElevatedButton(
-    onPressed: () {},
-    style: ElevatedButton.styleFrom(
-      backgroundColor: AppColors.primary,
-      foregroundColor: AppColors.buttonPrimaryText,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-    ),
-    child: const Text(
-      "Continue",
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-      ),
-    ),
-  ),
-),
-
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.buttonPrimaryText,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: const Text(
+                    "Continue",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
