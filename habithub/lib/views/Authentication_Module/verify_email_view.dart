@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habithub/core/theme/app_colors.dart';
+import 'package:habithub/views/Authentication_Module/complete_profile_view.dart';
 import 'package:habithub/views/Authentication_Module/signup_view.dart';
 
 class VerifyEmailView extends StatefulWidget {
@@ -17,8 +18,9 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               /// Top Row
               Row(
                 children: [
@@ -76,14 +78,16 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                   letterSpacing: 1.5,
                 ),
               ),
-                            const SizedBox(height: 10),
-        SizedBox(height: 150, width: 150,
-        child: Image.asset(
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 150,
+                width: 150,
+                child: Image.asset(
                   'assets/email_sent.png',
                   fit: BoxFit.contain,
                 ),
-        ),
-        const Text(
+              ),
+              const Text(
                 "Almost there",
                 style: TextStyle(
                   color: AppColors.primary,
@@ -93,7 +97,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                 ),
               ),
 
-          const Text(
+              const Text(
                 "Check your inbox",
                 style: TextStyle(
                   color: AppColors.textPrimary,
@@ -116,7 +120,14 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                 width: double.infinity,
                 height: 58,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CompleteProfileView(),
+                      ),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: AppColors.buttonPrimaryText,
@@ -130,7 +141,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                   ),
                 ),
               ),
-              
+
               SizedBox(
                 width: double.infinity,
                 height: 58,
@@ -174,10 +185,8 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               ),
 
               const SizedBox(height: 20),
-
-          ]
+            ],
           ),
-          
         ),
       ),
     );
