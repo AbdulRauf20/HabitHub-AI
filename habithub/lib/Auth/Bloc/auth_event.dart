@@ -46,3 +46,5 @@ class CompleteProfileRequested extends AuthEvent {
 
 /// Logout
 class LogoutRequested extends AuthEvent {}
+
+class ResendVerificationEmailRequested extends AuthEvent {}

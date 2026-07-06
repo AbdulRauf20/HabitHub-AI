@@ -16,6 +16,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CheckEmailVerificationRequested>(_onCheckEmailVerificationRequested);
     on<CompleteProfileRequested>(_onCompleteProfileRequested);
     on<LogoutRequested>(_onLogoutRequested);
+    on<ResendVerificationEmailRequested>(_onResendVerificationEmailRequested);
+  }
+  Future<void> _onResendVerificationEmailRequested(
+    ResendVerificationEmailRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    try {
+      await _authService.resendVerificationEmail();
+
+      emit(EmailNotVerified());
+    } catch (e) {
+      emit(AuthFailure(message: e.toString()));
+    }
   }
 
   /// Login
@@ -140,12 +155,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final isVerified = await _authService.isEmailVerified();
 
       if (isVerified) {
-        emit(
-          Authenticated(
-            emailVerified: true,
-            profileCompleted: false, // Firestore later
-          ),
-        );
+        emit(ProfileIncomplete());
       } else {
         emit(EmailNotVerified());
       }

@@ -18,17 +18,13 @@ class SignUpView extends StatefulWidget {
 class _SignUpViewState extends State<SignUpView> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _fullNameController =
-      TextEditingController();
+  final TextEditingController _fullNameController = TextEditingController();
 
-  final TextEditingController _userNameController =
-      TextEditingController();
+  final TextEditingController _userNameController = TextEditingController();
 
-  final TextEditingController _emailController =
-      TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
-  final TextEditingController _passwordController =
-      TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   final TextEditingController _confirmPasswordController =
       TextEditingController();
@@ -112,19 +108,14 @@ class _SignUpViewState extends State<SignUpView> {
       listener: (context, state) {
         if (state is AuthFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
           );
         }
 
         if (state is EmailNotVerified) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-              builder: (_) => const VerifyEmailView(),
-            ),
+            MaterialPageRoute(builder: (_) => const VerifyEmailView()),
           );
         }
       },
@@ -132,10 +123,7 @@ class _SignUpViewState extends State<SignUpView> {
         backgroundColor: AppColors.background,
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24,
-              vertical: 20,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
             child: Form(
               key: _formKey,
               child: Column(
@@ -158,9 +146,7 @@ class _SignUpViewState extends State<SignUpView> {
                         height: 7,
                         width: 25,
                         child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                          ),
+                          decoration: BoxDecoration(color: AppColors.primary),
                         ),
                       ),
                       const SizedBox(width: 5),
@@ -168,9 +154,7 @@ class _SignUpViewState extends State<SignUpView> {
                         height: 7,
                         width: 25,
                         child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: AppColors.card,
-                          ),
+                          decoration: BoxDecoration(color: AppColors.card),
                         ),
                       ),
                       const SizedBox(width: 5),
@@ -178,9 +162,7 @@ class _SignUpViewState extends State<SignUpView> {
                         height: 7,
                         width: 25,
                         child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: AppColors.card,
-                          ),
+                          decoration: BoxDecoration(color: AppColors.card),
                         ),
                       ),
                       const Spacer(),
@@ -481,8 +463,7 @@ class _SignUpViewState extends State<SignUpView> {
                       suffixIcon: IconButton(
                         onPressed: () {
                           setState(() {
-                            _obscureConfirmPassword =
-                                !_obscureConfirmPassword;
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
                           });
                         },
                         icon: Icon(
@@ -527,158 +508,145 @@ class _SignUpViewState extends State<SignUpView> {
                   ),
 
                   const SizedBox(height: 25),
-                SizedBox(
-                  width: double.infinity,
-                  height: 58,
-                  child: BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, state) {
-                      return ElevatedButton(
-                        onPressed: state is AuthLoading
-                            ? null
-                            : () {
-                                if (!_formKey.currentState!.validate()) {
-                                  return;
-                                }
+                  SizedBox(
+                    width: double.infinity,
+                    height: 58,
+                    child: BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                        return ElevatedButton(
+                          onPressed: state is AuthLoading
+                              ? null
+                              : () {
+                                  if (!_formKey.currentState!.validate()) {
+                                    return;
+                                  }
 
-                                if (!_isChecked) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        "Please accept the Terms & Privacy Policy.",
+                                  if (!_isChecked) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          "Please accept the Terms & Privacy Policy.",
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                  return;
-                                }
+                                    );
+                                    return;
+                                  }
 
-                                context.read<AuthBloc>().add(
-                                     SignupRequested(
-  fullName: _fullNameController.text.trim(),
-  userName: _userNameController.text.trim(),
-  email: _emailController.text.trim(),
-  password: _passwordController.text.trim(),
-));
-                              },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor:
-                              AppColors.buttonPrimaryText,
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(18),
-                          ),
-                        ),
-                        child: state is AuthLoading
-                            ? const SizedBox(
-                                height: 24,
-                                width: 24,
-                                child:
-                                    CircularProgressIndicator(
-                                  strokeWidth: 3,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Text(
-                                "Create Account",
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                      );
-                    },
-                  ),
-                ),
-
-                const SizedBox(height: 35),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: Divider(
-                        color:
-                            Colors.white.withValues(alpha: .2),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                      ),
-                      child: Text(
-                        "OR Sign Up with",
-                        style: TextStyle(
-                          color: Colors.white
-                              .withValues(alpha: .6),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Divider(
-                        color:
-                            Colors.white.withValues(alpha: .2),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 30),
-
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceEvenly,
-                  children: [
-                    socialButton("assets/google.png"),
-                    socialButton("assets/apple.png"),
-                    socialButton("assets/facebook.png"),
-                  ],
-                ),
-
-                const SizedBox(height: 45),
-
-                Center(
-                  child: RichText(
-                    text: TextSpan(
-                      children: [
-                        const TextSpan(
-                          text:
-                              "Already have an account? ",
-                          style: TextStyle(
-                            color:
-                                AppColors.textPrimary,
-                            fontSize: 15,
-                          ),
-                        ),
-                        TextSpan(
-                          text: "Log In",
-                          style: const TextStyle(
-                            color: AppColors.primary,
-                            fontWeight:
-                                FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                          recognizer:
-                              TapGestureRecognizer()
-                                ..onTap = () {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          const LoginView(),
+                                  context.read<AuthBloc>().add(
+                                    SignupRequested(
+                                      fullName: _fullNameController.text.trim(),
+                                      userName: _userNameController.text.trim(),
+                                      email: _emailController.text.trim(),
+                                      password: _passwordController.text.trim(),
                                     ),
                                   );
                                 },
-                        ),
-                      ],
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.buttonPrimaryText,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                          ),
+                          child: state is AuthLoading
+                              ? const SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 3,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  "Create Account",
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                        );
+                      },
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 20),
-              ],
+                  const SizedBox(height: 35),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Divider(
+                          color: Colors.white.withValues(alpha: .2),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          "OR Sign Up with",
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: .6),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          color: Colors.white.withValues(alpha: .2),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      socialButton("assets/google.png"),
+                      socialButton("assets/apple.png"),
+                      socialButton("assets/facebook.png"),
+                    ],
+                  ),
+
+                  const SizedBox(height: 45),
+
+                  Center(
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          const TextSpan(
+                            text: "Already have an account? ",
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 15,
+                            ),
+                          ),
+                          TextSpan(
+                            text: "Log In",
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const LoginView(),
+                                  ),
+                                );
+                              },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),
-      ),
       ),
     );
   }
@@ -689,8 +657,7 @@ class _SignUpViewState extends State<SignUpView> {
       width: 62,
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius:
-            BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(18),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -699,4 +666,3 @@ class _SignUpViewState extends State<SignUpView> {
     );
   }
 }
-
