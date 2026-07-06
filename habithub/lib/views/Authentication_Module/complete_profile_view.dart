@@ -257,6 +257,10 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
                     value: "Improve Sleep",
                     child: Text("Improve Sleep"),
                   ),
+                  DropdownMenuItem(
+                    value: "Others",
+                    child: Text("Others"),
+                  ),
                 ],
                 onChanged: (value) {
                   setState(() {
