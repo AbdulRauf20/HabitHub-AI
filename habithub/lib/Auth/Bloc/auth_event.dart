@@ -8,20 +8,19 @@ class LoginRequested extends AuthEvent {
   final String email;
   final String password;
 
-  LoginRequested({
-    required this.email,
-    required this.password,
-  });
+  LoginRequested({required this.email, required this.password});
 }
 
 /// Signup
 class SignupRequested extends AuthEvent {
-  final String username;
+  final String fullName;
+  final String userName;
   final String email;
   final String password;
 
   SignupRequested({
-    required this.username,
+    required this.fullName,
+    required this.userName,
     required this.email,
     required this.password,
   });
@@ -31,9 +30,7 @@ class SignupRequested extends AuthEvent {
 class ForgotPasswordRequested extends AuthEvent {
   final String email;
 
-  ForgotPasswordRequested({
-    required this.email,
-  });
+  ForgotPasswordRequested({required this.email});
 }
 
 /// Check whether email has been verified
@@ -44,10 +41,7 @@ class CompleteProfileRequested extends AuthEvent {
   final String bio;
   final String gender;
 
-  CompleteProfileRequested({
-    required this.bio,
-    required this.gender,
-  });
+  CompleteProfileRequested({required this.bio, required this.gender});
 }
 
 /// Logout
