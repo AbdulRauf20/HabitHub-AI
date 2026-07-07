@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:habithub/Auth/Bloc/auth_bloc.dart';
+import 'package:habithub/Auth/Bloc/auth_event.dart';
+import 'package:habithub/Auth/Bloc/auth_state.dart';
+import 'package:habithub/views/Authentication_Module/complete_profile_view.dart';
+import 'package:habithub/views/Authentication_Module/verify_email_view.dart';
 import 'dart:async';
 import 'package:habithub/views/Authentication_Module/welcome_view.dart';
 
@@ -14,22 +20,22 @@ class _SplashScreenViewState extends State<SplashScreenView> {
   Timer? timer;
 
   @override
+  @override
   void initState() {
     super.initState();
 
-    // Animation Timer
+    // Loading Animation
     timer = Timer.periodic(const Duration(milliseconds: 400), (timer) {
       setState(() {
         filledBoxes = (filledBoxes + 1) % 5;
       });
     });
 
-    // Navigation Timer
+    // Check auth status after splash animation
     Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const WelcomeView()),
-      );
+      if (!mounted) return;
+
+      context.read<AuthBloc>().add(CheckAuthStatusRequested());
     });
   }
 
@@ -41,61 +47,109 @@ class _SplashScreenViewState extends State<SplashScreenView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // HabitHub Background
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+          if (state is Unauthenticated) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const WelcomeView(),
+        ),
+      );
+    }
 
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // Center vertically
-            children: [
-              // Logo
-              SizedBox(
-                height: 200,
-                width: 200,
-                child: Image.asset('assets/logo.png', fit: BoxFit.contain),
-              ),
+    if (state is EmailNotVerified) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const VerifyEmailView(),
+        ),
+      );
+    }
 
-              const SizedBox(height: 24),
+    if (state is ProfileIncomplete) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const CompleteProfileView(),
+        ),
+      );
+    }
 
-              // App Name
-              const Text(
-                'HabitHub',
-                style: TextStyle(
-                  fontSize: 34,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+    // Temporary until HomeView is created
+    if (state is Authenticated) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const CompleteProfileView(),
+        ),
+      );
+    }
+
+    if (state is AuthFailure) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.message),
+        ),
+      );
+    }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFF0F172A), // HabitHub Background
+
+        body: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+              children: [
+                // Logo
+                SizedBox(
+                  height: 200,
+                  width: 200,
+                  child: Image.asset('assets/logo.png', fit: BoxFit.contain),
                 ),
-              ),
 
-              const SizedBox(height: 8),
+                const SizedBox(height: 24),
 
-              // Tagline
-              const Text(
-                'Build Better. Every Day.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFFCBD5E1),
-                  fontWeight: FontWeight.w400,
+                // App Name
+                const Text(
+                  'HabitHub',
+                  style: TextStyle(
+                    fontSize: 34,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 40),
+                const SizedBox(height: 8),
 
-              // Contribution Boxes
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildBox(0),
-                  const SizedBox(width: 8),
-                  _buildBox(1),
-                  const SizedBox(width: 8),
-                  _buildBox(2),
-                  const SizedBox(width: 8),
-                  _buildBox(3),
-                ],
-              ),
-            ],
+                // Tagline
+                const Text(
+                  'Build Better. Every Day.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFFCBD5E1),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+
+                // Contribution Boxes
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildBox(0),
+                    const SizedBox(width: 8),
+                    _buildBox(1),
+                    const SizedBox(width: 8),
+                    _buildBox(2),
+                    const SizedBox(width: 8),
+                    _buildBox(3),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -103,14 +157,14 @@ class _SplashScreenViewState extends State<SplashScreenView> {
   }
 
   /// Contribution Box Widget
-  Widget _buildBox(int index) {
+    Widget _buildBox(int index) {
     return Container(
       height: 18,
       width: 18,
       decoration: BoxDecoration(
         color: index < filledBoxes
-            ? const Color(0xFF22C55E) // Green
-            : const Color(0xFF334155), // Gray
+            ? const Color(0xFF22C55E)
+            : const Color(0xFF334155),
         borderRadius: BorderRadius.circular(5),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../services/auth_service.dart';
 import 'auth_event.dart';
@@ -114,35 +115,45 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   /// Check if user is already logged in
-  Future<void> _onCheckAuthStatusRequested(
-    CheckAuthStatusRequested event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoading());
+ Future<void> _onCheckAuthStatusRequested(
+  CheckAuthStatusRequested event,
+  Emitter<AuthState> emit,
+) async {
+  emit(AuthLoading());
 
-    try {
-      final user = await _authService.getCurrentUser();
+  try {
+    final user = await _authService.getCurrentUser();
 
-      if (user == null) {
-        emit(Unauthenticated());
-        return;
-      }
-
-      if (!user.emailVerified) {
-        emit(EmailNotVerified());
-        return;
-      }
-
-      emit(
-        Authenticated(
-          emailVerified: true,
-          profileCompleted: false, // Firestore later
-        ),
-      );
-    } catch (e) {
-      emit(AuthFailure(message: e.toString()));
+    if (user == null) {
+      emit(Unauthenticated());
+      return;
     }
+
+    // Always reload to get the latest verification status
+    await user.reload();
+
+    final refreshedUser = await _authService.getCurrentUser();
+
+    if (refreshedUser == null) {
+      emit(Unauthenticated());
+      return;
+    }
+
+    if (!refreshedUser.emailVerified) {
+      emit(EmailNotVerified());
+      return;
+    }
+
+    // Firestore check will be added tomorrow.
+    emit(ProfileIncomplete());
+  } catch (e) {
+    emit(
+      AuthFailure(
+        message: e.toString(),
+      ),
+    );
   }
+}
 
   /// Check Email Verification
   Future<void> _onCheckEmailVerificationRequested(
@@ -186,5 +197,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       emit(AuthFailure(message: e.toString()));
     }
+  }
+}
+Future<User?> getCurrentUser() async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      await user.reload(); // Refresh user data
+      return FirebaseAuth.instance.currentUser;
+    }
+
+    return null;
+  } on FirebaseAuthException catch (e) {
+    throw Exception(e.message ?? "Failed to get current user.");
+  } catch (e) {
+    throw Exception(e.toString());
   }
 }
