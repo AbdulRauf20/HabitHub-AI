@@ -4,6 +4,7 @@ import '../services/auth_service.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
+
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService _authService;
 
@@ -214,4 +215,4 @@ Future<User?> getCurrentUser() async {
   } catch (e) {
     throw Exception(e.toString());
   }
-}
+} 
