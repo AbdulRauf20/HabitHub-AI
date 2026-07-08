@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:habithub/core/theme/app_colors.dart';
+import 'package:habithub/Auth/services/theme/app_colors.dart';
 
 class ResetEmailSentView extends StatefulWidget {
   const ResetEmailSentView({super.key});

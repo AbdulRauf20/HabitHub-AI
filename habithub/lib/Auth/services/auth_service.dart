@@ -102,7 +102,20 @@ class AuthService {
   // check auth status
 
   Future<User?> getCurrentUser() async {
-    return _auth.currentUser;
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        await user.reload(); // Refresh user data
+        return FirebaseAuth.instance.currentUser;
+      }
+
+      return null;
+    } on FirebaseAuthException catch (e) {
+      throw Exception(e.message ?? "Failed to get current user.");
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   Future<void> resendVerificationEmail() async {
