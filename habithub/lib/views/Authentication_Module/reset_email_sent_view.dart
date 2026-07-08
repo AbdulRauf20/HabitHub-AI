@@ -49,7 +49,7 @@ class _ResetEmailSentViewState extends State<ResetEmailSentView> {
                 ),
               ),
               const Text(
-                "We've sent a reset link to arauf@gmail.com. Check your inbox and follow the steps.",
+                "We've sent a reset link to your email. Check your inbox and follow the steps.",
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 10,

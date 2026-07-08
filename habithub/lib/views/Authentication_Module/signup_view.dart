@@ -7,6 +7,7 @@ import 'package:habithub/Auth/Bloc/auth_state.dart';
 import 'package:habithub/Auth/services/theme/app_colors.dart';
 import 'package:habithub/views/Authentication_Module/login_view.dart';
 import 'package:habithub/views/Authentication_Module/verify_email_view.dart';
+import 'package:habithub/views/Authentication_Module/welcome_view.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -134,7 +135,12 @@ class _SignUpViewState extends State<SignUpView> {
                     children: [
                       IconButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const WelcomeView(),
+                            ),
+                          );
                         },
                         icon: const Icon(
                           Icons.arrow_back_ios_new_rounded,
