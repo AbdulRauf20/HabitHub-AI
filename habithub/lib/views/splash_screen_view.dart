@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habithub/Auth/Bloc/auth_bloc.dart';
 import 'package:habithub/Auth/Bloc/auth_event.dart';
 import 'package:habithub/Auth/Bloc/auth_state.dart';
+import 'package:habithub/Auth/services/theme/app_colors.dart';
 import 'package:habithub/views/Authentication_Module/complete_profile_view.dart';
 import 'package:habithub/views/Authentication_Module/verify_email_view.dart';
 import 'dart:async';
@@ -49,50 +50,40 @@ class _SplashScreenViewState extends State<SplashScreenView> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-          if (state is Unauthenticated) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const WelcomeView(),
-        ),
-      );
-    }
+        if (state is Unauthenticated) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const WelcomeView()),
+          );
+        }
 
-    if (state is EmailNotVerified) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const VerifyEmailView(),
-        ),
-      );
-    }
+        if (state is EmailNotVerified) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const VerifyEmailView()),
+          );
+        }
 
-    if (state is ProfileIncomplete) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const CompleteProfileView(),
-        ),
-      );
-    }
+        if (state is ProfileIncomplete) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const CompleteProfileView()),
+          );
+        }
 
-    // Temporary until HomeView is created
-    if (state is Authenticated) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const CompleteProfileView(),
-        ),
-      );
-    }
+        // Temporary until HomeView is created
+        if (state is Authenticated) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const CompleteProfileView()),
+          );
+        }
 
-    if (state is AuthFailure) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(state.message),
-        ),
-      );
-    }
+        if (state is AuthFailure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+        }
       },
       child: Scaffold(
         backgroundColor: const Color(0xFF0F172A), // HabitHub Background
@@ -104,20 +95,34 @@ class _SplashScreenViewState extends State<SplashScreenView> {
               children: [
                 // Logo
                 SizedBox(
-                  height: 200,
-                  width: 200,
+                  height: 175,
+                  width: 175,
                   child: Image.asset('assets/logo.png', fit: BoxFit.contain),
                 ),
 
                 const SizedBox(height: 24),
 
                 // App Name
-                const Text(
-                  'HabitHub',
-                  style: TextStyle(
-                    fontSize: 34,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                RichText(
+                  text: const TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Habit',
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'Hub',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
@@ -157,7 +162,7 @@ class _SplashScreenViewState extends State<SplashScreenView> {
   }
 
   /// Contribution Box Widget
-    Widget _buildBox(int index) {
+  Widget _buildBox(int index) {
     return Container(
       height: 18,
       width: 18,
