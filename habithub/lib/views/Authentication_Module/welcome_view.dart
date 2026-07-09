@@ -62,8 +62,8 @@ class _WelcomeViewState extends State<WelcomeView> {
 
               // Illustration
               SizedBox(
-                height: 220,
-                width: 220,
+                height: 170,
+                width: 170,
                 child: Image.asset(
                   'assets/welcome_screen.png',
                   fit: BoxFit.contain,
