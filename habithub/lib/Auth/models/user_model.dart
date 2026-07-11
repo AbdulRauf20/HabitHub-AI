@@ -15,6 +15,7 @@ class UserModel {
   final int coins;
   final int totalHabits;
   final Timestamp createdAt;
+  final String goal;
 
   UserModel({
     required this.uid,
@@ -31,6 +32,7 @@ class UserModel {
     required this.coins,
     required this.totalHabits,
     required this.createdAt,
+    required this.goal
   });
 
   Map<String, dynamic> toMap() {
@@ -49,6 +51,7 @@ class UserModel {
       'coins': coins,
       'totalHabits': totalHabits,
       'createdAt': createdAt,
+      'goal' : goal,
     };
   }
 
@@ -69,7 +72,7 @@ class UserModel {
       level: map['level'] ?? 1,
       coins: map['coins'] ?? 0,
       totalHabits: map['totalHabits'] ?? 0,
-      createdAt: map['createdAt'] ?? Timestamp.now(),
+      createdAt: map['createdAt'] ?? Timestamp.now(), goal: map['goal'],
     );
   }
 }

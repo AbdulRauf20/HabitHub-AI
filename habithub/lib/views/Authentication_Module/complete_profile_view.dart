@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:habithub/Auth/services/theme/app_colors.dart';
 import 'package:habithub/views/Authentication_Module/verify_email_view.dart';
@@ -10,8 +11,14 @@ class CompleteProfileView extends StatefulWidget {
 }
 
 class _CompleteProfileViewState extends State<CompleteProfileView> {
+  final TextEditingController _aboutController = TextEditingController();
   String selectedGender = "male";
   String selectedGoal = "Build Better Habits";
+  File? _selectedImage;
+  @override void dispose() {
+    _aboutController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,9 +127,9 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
                             ),
                           ),
                         ),
-                
+
                         const SizedBox(height: 12),
-                
+
                         const Text(
                           "Add Photo",
                           style: TextStyle(
@@ -138,6 +145,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
               ),
 
               TextField(
+                controller: _aboutController,
                 maxLines: 5,
                 style: const TextStyle(color: AppColors.textPrimary),
                 decoration: InputDecoration(
@@ -257,10 +265,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
                     value: "Improve Sleep",
                     child: Text("Improve Sleep"),
                   ),
-                  DropdownMenuItem(
-                    value: "Others",
-                    child: Text("Others"),
-                  ),
+                  DropdownMenuItem(value: "Others", child: Text("Others")),
                 ],
                 onChanged: (value) {
                   setState(() {

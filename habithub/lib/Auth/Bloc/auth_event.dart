@@ -1,3 +1,5 @@
+import 'dart:io';
+
 abstract class AuthEvent {}
 
 /// Check if user is already logged in
@@ -41,7 +43,7 @@ class CompleteProfileRequested extends AuthEvent {
   final String bio;
   final String gender;
 
-  CompleteProfileRequested({required this.bio, required this.gender});
+  CompleteProfileRequested({required this.bio, required this.gender, required String goal, File? photoUrl});
 }
 
 /// Logout
