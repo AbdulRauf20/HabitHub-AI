@@ -1,5 +1,7 @@
-import 'dart:io';
+// import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:habithub/Auth/services/firestore_service.dart';
 import 'package:habithub/Auth/services/theme/app_colors.dart';
 import 'package:habithub/views/Authentication_Module/verify_email_view.dart';
 
@@ -14,11 +16,69 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
   final TextEditingController _aboutController = TextEditingController();
   String selectedGender = "male";
   String selectedGoal = "Build Better Habits";
-  File? _selectedImage;
-  @override void dispose() {
+  // File? _selectedImage;
+  final TextEditingController _fullNameController = TextEditingController();
+
+  final TextEditingController _userNameController = TextEditingController();
+
+  final FirestoreService _firestoreService = FirestoreService();
+
+  bool _isCheckingUsername = false;
+  bool? _isUsernameAvailable;
+
+Timer? _debounce;
+
+  Future<void> _checkUsername() async {
+    final username = _userNameController.text.trim();
+
+    if (username.length < 3) {
+      setState(() {
+        _isUsernameAvailable = null;
+      });
+      return;
+    }
+
+    setState(() {
+      _isCheckingUsername = true;
+    });
+
+    final available = await _firestoreService.isUsernameAvailable(username);
+
+    setState(() {
+      _isCheckingUsername = false;
+      _isUsernameAvailable = available;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _userNameController.addListener(() {
+  setState(() {});
+
+  if (_debounce?.isActive ?? false) {
+    _debounce!.cancel();
+  }
+
+  _debounce = Timer(
+    const Duration(milliseconds: 500),
+    () {
+      _checkUsername();
+    },
+  );
+});
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _fullNameController.dispose();
+    _userNameController.dispose();
     _aboutController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -143,6 +203,127 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
                   ],
                 ),
               ),
+              const Text(
+                "Full Name",
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              TextFormField(
+                controller: _fullNameController,
+                style: const TextStyle(color: Colors.white),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Please enter your full name";
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  hintText: "Abdul Rauf",
+                  hintStyle: TextStyle(
+                    color: Colors.white.withValues(alpha: .45),
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.person,
+                    color: AppColors.primary,
+                  ),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 25),
+
+              const Text(
+                "Username",
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              TextFormField(
+                controller: _userNameController,
+                style: const TextStyle(color: Colors.white),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Please enter username";
+                  }
+
+                  if (value.trim().length < 3) {
+                    return "Username must be at least 3 characters";
+                  }
+
+                  return null;
+                },
+                decoration: InputDecoration(
+                  hintText: "abdulrauf",
+                  hintStyle: TextStyle(
+                    color: Colors.white.withValues(alpha: .45),
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.person_outline,
+                    color: AppColors.primary,
+                  ),
+                  suffixIcon: _isCheckingUsername
+                      ? const Padding(
+                          padding: EdgeInsets.all(12),
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        )
+                      : Icon(
+                          _isUsernameAvailable == true
+                              ? Icons.check_circle
+                              : Icons.cancel,
+                          color: _isUsernameAvailable == true
+                              ? AppColors.primary
+                              : Colors.red,
+                        ),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+
+              if (_userNameController.text.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    _isCheckingUsername
+                        ? "Checking username..."
+                        : _userNameController.text.length < 3
+                        ? "Username must be at least 3 characters."
+                        : _isUsernameAvailable == true
+                        ? "Username is available."
+                        : "Username is already taken.",
+                    style: TextStyle(
+                      color: _isCheckingUsername
+                          ? Colors.orange
+                          : _isUsernameAvailable == true
+                          ? AppColors.primary
+                          : Colors.red,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+
+              const SizedBox(height: 25),
 
               TextField(
                 controller: _aboutController,

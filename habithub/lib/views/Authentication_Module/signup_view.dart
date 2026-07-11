@@ -19,9 +19,6 @@ class SignUpView extends StatefulWidget {
 class _SignUpViewState extends State<SignUpView> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _fullNameController = TextEditingController();
-
-  final TextEditingController _userNameController = TextEditingController();
 
   final TextEditingController _emailController = TextEditingController();
 
@@ -46,10 +43,6 @@ class _SignUpViewState extends State<SignUpView> {
     super.initState();
 
     _passwordController.addListener(_checkPasswordStrength);
-
-    _userNameController.addListener(() {
-      setState(() {});
-    });
   }
 
   void _checkPasswordStrength() {
@@ -94,8 +87,6 @@ class _SignUpViewState extends State<SignUpView> {
 
   @override
   void dispose() {
-    _fullNameController.dispose();
-    _userNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -214,112 +205,7 @@ class _SignUpViewState extends State<SignUpView> {
 
                   const SizedBox(height: 45),
 
-                  const Text(
-                    "Full Name",
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  TextFormField(
-                    controller: _fullNameController,
-                    style: const TextStyle(color: Colors.white),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return "Please enter your full name";
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      hintText: "Abdul Rauf",
-                      hintStyle: TextStyle(
-                        color: Colors.white.withValues(alpha: .45),
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.person,
-                        color: AppColors.primary,
-                      ),
-                      filled: true,
-                      fillColor: AppColors.surface,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  const Text(
-                    "Username",
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  TextFormField(
-                    controller: _userNameController,
-                    style: const TextStyle(color: Colors.white),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return "Please enter username";
-                      }
-
-                      if (value.trim().length < 3) {
-                        return "Username must be at least 3 characters";
-                      }
-
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      hintText: "abdulrauf",
-                      hintStyle: TextStyle(
-                        color: Colors.white.withValues(alpha: .45),
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.person_outline,
-                        color: AppColors.primary,
-                      ),
-                      suffixIcon: Icon(
-                        _userNameController.text.length >= 3
-                            ? Icons.check_circle
-                            : Icons.circle_outlined,
-                        color: _userNameController.text.length >= 3
-                            ? AppColors.primary
-                            : Colors.grey,
-                      ),
-                      filled: true,
-                      fillColor: AppColors.surface,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-
-                  if (_userNameController.text.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(
-                        _userNameController.text.length >= 3
-                            ? "Looks good! Username is available."
-                            : "Username is too short.",
-                        style: TextStyle(
-                          color: _userNameController.text.length >= 3
-                              ? AppColors.primary
-                              : Colors.orange,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-
-                  const SizedBox(height: 25),
+                
 
                   const Text(
                     "Email",
@@ -540,8 +426,6 @@ class _SignUpViewState extends State<SignUpView> {
 
                                   context.read<AuthBloc>().add(
                                     SignupRequested(
-                                      fullName: _fullNameController.text.trim(),
-                                      userName: _userNameController.text.trim(),
                                       email: _emailController.text.trim(),
                                       password: _passwordController.text.trim(),
                                     ),

@@ -4,6 +4,16 @@ import 'package:habithub/Auth/models/user_model.dart';
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<bool> isUsernameAvailable(String username) async {
+    final result = await users
+        .where('username', isEqualTo: username)
+        .get();
+
+    return result.docs.isEmpty;
+  }
+
+
+
   /// Collection Reference
   CollectionReference get users => _firestore.collection('users');
 
@@ -83,3 +93,4 @@ class FirestoreService {
     }
   }
 }
+
