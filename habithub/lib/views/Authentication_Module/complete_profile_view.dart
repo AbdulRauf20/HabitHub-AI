@@ -1,4 +1,5 @@
-// import 'dart:io';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:habithub/Auth/services/firestore_service.dart';
@@ -16,7 +17,8 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
   final TextEditingController _aboutController = TextEditingController();
   String selectedGender = "male";
   String selectedGoal = "Build Better Habits";
-  // File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
+  File? _selectedImage;
   final TextEditingController _fullNameController = TextEditingController();
 
   final TextEditingController _userNameController = TextEditingController();
@@ -26,7 +28,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
   bool _isCheckingUsername = false;
   bool? _isUsernameAvailable;
 
-Timer? _debounce;
+  Timer? _debounce;
 
   Future<void> _checkUsername() async {
     final username = _userNameController.text.trim();
@@ -55,19 +57,16 @@ Timer? _debounce;
     super.initState();
 
     _userNameController.addListener(() {
-  setState(() {});
+      setState(() {});
 
-  if (_debounce?.isActive ?? false) {
-    _debounce!.cancel();
-  }
+      if (_debounce?.isActive ?? false) {
+        _debounce!.cancel();
+      }
 
-  _debounce = Timer(
-    const Duration(milliseconds: 500),
-    () {
-      _checkUsername();
-    },
-  );
-});
+      _debounce = Timer(const Duration(milliseconds: 500), () {
+        _checkUsername();
+      });
+    });
   }
 
   @override
@@ -77,6 +76,19 @@ Timer? _debounce;
     _userNameController.dispose();
     _aboutController.dispose();
     super.dispose();
+  }
+
+  Future<void> pickImage() async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+    );
+
+    if (image == null) return;
+
+    setState(() {
+      _selectedImage = File(image.path);
+    });
   }
 
   @override
@@ -174,17 +186,20 @@ Timer? _debounce;
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            // We'll add image picker functionality later.
-                          },
+                          onTap: pickImage,
                           child: CircleAvatar(
                             radius: 55,
                             backgroundColor: AppColors.card,
-                            child: const Icon(
-                              Icons.add_a_photo_rounded,
-                              size: 35,
-                              color: AppColors.iconSecondary,
-                            ),
+                            backgroundImage: _selectedImage != null
+                                ? FileImage(_selectedImage!)
+                                : null,
+                            child: _selectedImage == null
+                                ? const Icon(
+                                    Icons.add_a_photo_rounded,
+                                    size: 35,
+                                    color: AppColors.iconSecondary,
+                                  )
+                                : null,
                           ),
                         ),
 
