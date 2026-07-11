@@ -16,8 +16,10 @@ class UserModel {
   final int totalHabits;
   final Timestamp createdAt;
   final String goal;
+  final String bio; 
 
   UserModel({
+    required this.bio,
     required this.uid,
     required this.fullName,
     required this.username,
@@ -32,7 +34,7 @@ class UserModel {
     required this.coins,
     required this.totalHabits,
     required this.createdAt,
-    required this.goal
+    required this.goal, required String profileImage,
   });
 
   Map<String, dynamic> toMap() {
@@ -57,6 +59,7 @@ class UserModel {
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
+      bio: map['bio'],
       uid: map['uid'],
       fullName: map['fullName'],
       username: map['username'],
@@ -72,7 +75,7 @@ class UserModel {
       level: map['level'] ?? 1,
       coins: map['coins'] ?? 0,
       totalHabits: map['totalHabits'] ?? 0,
-      createdAt: map['createdAt'] ?? Timestamp.now(), goal: map['goal'],
+      createdAt: map['createdAt'] ?? Timestamp.now(), goal: map['goal'], profileImage: map['profileImage']
     );
   }
 }
