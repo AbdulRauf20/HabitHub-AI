@@ -5,8 +5,10 @@ import 'package:habithub/Auth/Bloc/auth_event.dart';
 import 'package:habithub/Auth/Bloc/auth_state.dart';
 import 'package:habithub/Auth/services/theme/app_colors.dart';
 import 'package:habithub/views/Authentication_Module/Forgot_password_view.dart';
+import 'package:habithub/views/Authentication_Module/complete_profile_view.dart';
 import 'package:habithub/views/Authentication_Module/verify_email_view.dart';
 import 'package:habithub/views/Authentication_Module/welcome_view.dart';
+import 'package:habithub/views/Home_Module/Home_feed.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -46,13 +48,26 @@ class _LoginViewState extends State<LoginView> {
             MaterialPageRoute(builder: (_) => const VerifyEmailView()),
           );
         }
+        if (state is ProfileIncomplete) {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const CompleteProfileView(),
+    ),
+  );
+}
 
         if (state is Authenticated) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text("Login Successful")));
 
-          // TODO: Navigate to HomeView
+          Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const HomeView(),
+    ),
+  );
         }
       },
       child: Scaffold(

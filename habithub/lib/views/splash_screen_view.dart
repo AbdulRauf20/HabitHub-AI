@@ -8,6 +8,7 @@ import 'package:habithub/views/Authentication_Module/complete_profile_view.dart'
 import 'package:habithub/views/Authentication_Module/verify_email_view.dart';
 import 'dart:async';
 import 'package:habithub/views/Authentication_Module/welcome_view.dart';
+import 'package:habithub/views/Home_Module/Home_feed.dart';
 
 class SplashScreenView extends StatefulWidget {
   const SplashScreenView({super.key});
@@ -20,7 +21,6 @@ class _SplashScreenViewState extends State<SplashScreenView> {
   int filledBoxes = 0;
   Timer? timer;
 
-  @override
   @override
   void initState() {
     super.initState();
@@ -55,31 +55,22 @@ class _SplashScreenViewState extends State<SplashScreenView> {
             context,
             MaterialPageRoute(builder: (_) => const WelcomeView()),
           );
-        }
-
-        if (state is EmailNotVerified) {
+        } else if (state is EmailNotVerified) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => const VerifyEmailView()),
           );
-        }
-
-        if (state is ProfileIncomplete) {
+        } else if (state is ProfileIncomplete) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => const CompleteProfileView()),
           );
-        }
-
-        // Temporary until HomeView is created
-        if (state is Authenticated) {
+        } else if (state is Authenticated) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const CompleteProfileView()),
+            MaterialPageRoute(builder: (_) => const HomeView()),
           );
-        }
-
-        if (state is AuthFailure) {
+        } else if (state is AuthFailure) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));

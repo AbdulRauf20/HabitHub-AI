@@ -2,10 +2,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../services/auth_service.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
-
+import '../services/firestore_service.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService _authService;
+  final FirestoreService _firestoreService = FirestoreService();
+  
 
   AuthBloc({required AuthService authService})
     : _authService = authService,
@@ -50,7 +52,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = userCredential.user;
 
       if (user == null) {
-        emit(AuthFailure(message: 'User not found.'));
+        emit(AuthFailure(message: "User not found."));
         return;
       }
 
@@ -59,12 +61,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return;
       }
 
-      emit(
-        Authenticated(
-          emailVerified: true,
-          profileCompleted: false, // Firestore later
-        ),
+      final profileCompleted = await _firestoreService.isProfileCompleted(
+        user.uid,
       );
+
+      if (!profileCompleted) {
+        emit(ProfileIncomplete());
+        return;
+      }
+
+      emit(Authenticated(emailVerified: true, profileCompleted: true));
     } catch (e) {
       emit(AuthFailure(message: e.toString()));
     }
@@ -134,12 +140,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       return;
     }
 
-    // Firestore check will come tomorrow.
-    emit(ProfileIncomplete());
+    final isCompleted =
+        await _firestoreService.isProfileCompleted(user.uid);
+
+    if (!isCompleted) {
+      emit(ProfileIncomplete());
+      return;
+    }
+
+    emit(
+      Authenticated(
+        emailVerified: true,
+        profileCompleted: true,
+      ),
+    );
   } catch (e) {
     emit(AuthFailure(message: e.toString()));
   }
 }
+
   /// Check Email Verification
   Future<void> _onCheckEmailVerificationRequested(
     CheckEmailVerificationRequested event,
