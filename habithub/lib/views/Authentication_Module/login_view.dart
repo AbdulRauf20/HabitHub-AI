@@ -49,13 +49,11 @@ class _LoginViewState extends State<LoginView> {
           );
         }
         if (state is ProfileIncomplete) {
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(
-      builder: (_) => const CompleteProfileView(),
-    ),
-  );
-}
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const CompleteProfileView()),
+          );
+        }
 
         if (state is Authenticated) {
           ScaffoldMessenger.of(
@@ -63,11 +61,9 @@ class _LoginViewState extends State<LoginView> {
           ).showSnackBar(const SnackBar(content: Text("Login Successful")));
 
           Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(
-      builder: (_) => const HomeView(),
-    ),
-  );
+            context,
+            MaterialPageRoute(builder: (_) => const HomeView()),
+          );
         }
       },
       child: Scaffold(
@@ -271,7 +267,7 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       TextButton(
                         onPressed: () {
-                         Navigator.push(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => const ForgotPasswordView(),
@@ -365,9 +361,13 @@ class _LoginViewState extends State<LoginView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      socialButton("assets/google.png"),
-                      socialButton("assets/apple.png"),
-                      socialButton("assets/facebook.png"),
+                      socialButton("assets/google.png", () {
+                        context.read<AuthBloc>().add(GoogleSignInRequested());
+                      }),
+
+                      socialButton("assets/apple.png", () {}),
+
+                      socialButton("assets/facebook.png", () {}),
                     ],
                   ),
 
@@ -406,17 +406,20 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget socialButton(String image) {
-    return Container(
-      height: 62,
-      width: 62,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Image.asset(image),
+  Widget socialButton(String image, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 62,
+        width: 62,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Image.asset(image),
+        ),
       ),
     );
   }

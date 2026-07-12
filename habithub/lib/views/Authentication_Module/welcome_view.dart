@@ -26,8 +26,8 @@ class _WelcomeViewState extends State<WelcomeView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: 30,
-                    width: 30,
+                    height: 40,
+                    width: 40,
                     child: Image.asset('assets/logo.png', fit: BoxFit.contain),
                   ),
 
@@ -62,8 +62,8 @@ class _WelcomeViewState extends State<WelcomeView> {
 
               // Illustration
               SizedBox(
-                height: 170,
-                width: 170,
+                height: 260,
+                width: 260,
                 child: Image.asset(
                   'assets/welcome_screen.png',
                   fit: BoxFit.contain,
@@ -80,7 +80,7 @@ class _WelcomeViewState extends State<WelcomeView> {
                       text: 'Turn your habits into ',
                       style: TextStyle(
                         color: AppColors.textPrimary,
-                        fontSize: 22,
+                        fontSize: 21,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -88,7 +88,7 @@ class _WelcomeViewState extends State<WelcomeView> {
                       text: 'green streaks.',
                       style: TextStyle(
                         color: AppColors.primary,
-                        fontSize: 22,
+                        fontSize: 21,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -105,7 +105,7 @@ class _WelcomeViewState extends State<WelcomeView> {
                   'Track daily habits, earn XP, unlock badges and grow with a community that shows up every single day.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 10,
                     color: AppColors.textPrimary.withValues(alpha: 0.5),
                   ),
                 ),

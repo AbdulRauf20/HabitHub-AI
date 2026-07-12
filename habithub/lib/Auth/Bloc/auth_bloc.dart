@@ -20,6 +20,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CompleteProfileRequested>(_onCompleteProfileRequested);
     on<LogoutRequested>(_onLogoutRequested);
     on<ResendVerificationEmailRequested>(_onResendVerificationEmailRequested);
+    on<GoogleSignInRequested>(_onGoogleSignInRequested);
   }
   Future<void> _onResendVerificationEmailRequested(
     ResendVerificationEmailRequested event,
@@ -75,6 +76,49 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthFailure(message: e.toString()));
     }
   }
+  Future<void> _onGoogleSignInRequested(
+  GoogleSignInRequested event,
+  Emitter<AuthState> emit,
+) async {
+  emit(AuthLoading());
+
+  try {
+    final userCredential =
+        await _authService.signInWithGoogle();
+
+    final user = userCredential.user;
+
+    if (user == null) {
+      emit(AuthFailure(message: "Google sign in failed."));
+      return;
+    }
+
+    final isNewUser =
+        userCredential.additionalUserInfo?.isNewUser ?? false;
+
+    if (isNewUser) {
+      emit(ProfileIncomplete());
+      return;
+    }
+
+    final profileCompleted =
+        await _firestoreService.isProfileCompleted(user.uid);
+
+    if (!profileCompleted) {
+      emit(ProfileIncomplete());
+      return;
+    }
+
+    emit(
+      Authenticated(
+        emailVerified: true,
+        profileCompleted: true,
+      ),
+    );
+  } catch (e) {
+    emit(AuthFailure(message: e.toString()));
+  }
+}
 
   /// Signup
   Future<void> _onSignupRequested(

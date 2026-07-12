@@ -46,3 +46,5 @@ class CompleteProfileRequested extends AuthEvent {
 class LogoutRequested extends AuthEvent {}
 
 class ResendVerificationEmailRequested extends AuthEvent {}
+
+class GoogleSignInRequested extends AuthEvent {}
