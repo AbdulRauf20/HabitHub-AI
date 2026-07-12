@@ -21,7 +21,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ResendVerificationEmailRequested>(_onResendVerificationEmailRequested);
     on<GoogleSignInRequested>(_onGoogleSignInRequested);
     on<FacebookSignInRequested>(_onFacebookSignInRequested);
+    on<AppleSignInRequested>(_onAppleSignInRequested);
   }
+
+  
+
   Future<void> _onResendVerificationEmailRequested(
     ResendVerificationEmailRequested event,
     Emitter<AuthState> emit,
@@ -119,6 +123,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthFailure(message: e.toString()));
     }
   }
+
+  Future<void> _onAppleSignInRequested(
+  AppleSignInRequested event,
+  Emitter<AuthState> emit,
+) async {
+  emit(AuthLoading());
+
+  try {
+    final credential =
+        await _authService.signInWithApple();
+
+    await _handleSocialLogin(credential, emit);
+  } catch (e) {
+    emit(AuthFailure(message: e.toString()));
+  }
+}
 
   Future<void> _onGoogleSignInRequested(
     GoogleSignInRequested event,
@@ -277,6 +297,36 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       emit(AuthFailure(message: e.toString()));
     }
+  }
+
+  Future<void> _handleSocialLogin(
+    dynamic userCredential,
+    Emitter<AuthState> emit,
+  ) async {
+    final user = userCredential.user;
+
+    if (user == null) {
+      emit(AuthFailure(message: "Social sign in failed."));
+      return;
+    }
+
+    final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
+
+    if (isNewUser) {
+      emit(ProfileIncomplete());
+      return;
+    }
+
+    final profileCompleted = await _firestoreService.isProfileCompleted(
+      user.uid,
+    );
+
+    if (!profileCompleted) {
+      emit(ProfileIncomplete());
+      return;
+    }
+
+    emit(Authenticated(emailVerified: true, profileCompleted: true));
   }
 }
 

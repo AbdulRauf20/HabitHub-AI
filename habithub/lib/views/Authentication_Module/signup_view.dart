@@ -502,7 +502,9 @@ class _SignUpViewState extends State<SignUpView> {
                         },
                       ),
 
-                      socialButton("assets/apple.png", null),
+                      socialButton("assets/apple.png", () {
+                        context.read<AuthBloc>().add(AppleSignInRequested());
+                      }),
 
                       socialButton("assets/facebook.png", () {
                         context.read<AuthBloc>().add(FacebookSignInRequested());

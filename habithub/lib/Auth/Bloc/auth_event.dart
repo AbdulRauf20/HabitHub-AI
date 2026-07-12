@@ -52,3 +52,5 @@ class ResendVerificationEmailRequested extends AuthEvent {}
 class GoogleSignInRequested extends AuthEvent {}
 
 class FacebookSignInRequested extends AuthEvent {}
+
+class AppleSignInRequested extends AuthEvent {}
