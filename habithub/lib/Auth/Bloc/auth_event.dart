@@ -18,10 +18,7 @@ class SignupRequested extends AuthEvent {
   final String email;
   final String password;
 
-  SignupRequested({
-    required this.email,
-    required this.password,
-  });
+  SignupRequested({required this.email, required this.password});
 }
 
 /// Forgot Password
@@ -39,7 +36,12 @@ class CompleteProfileRequested extends AuthEvent {
   final String bio;
   final String gender;
 
-  CompleteProfileRequested({required this.bio, required this.gender, required String goal, File? photoUrl});
+  CompleteProfileRequested({
+    required this.bio,
+    required this.gender,
+    required String goal,
+    File? photoUrl,
+  });
 }
 
 /// Logout
@@ -48,3 +50,5 @@ class LogoutRequested extends AuthEvent {}
 class ResendVerificationEmailRequested extends AuthEvent {}
 
 class GoogleSignInRequested extends AuthEvent {}
+
+class FacebookSignInRequested extends AuthEvent {}

@@ -19,7 +19,6 @@ class SignUpView extends StatefulWidget {
 class _SignUpViewState extends State<SignUpView> {
   final _formKey = GlobalKey<FormState>();
 
-
   final TextEditingController _emailController = TextEditingController();
 
   final TextEditingController _passwordController = TextEditingController();
@@ -204,8 +203,6 @@ class _SignUpViewState extends State<SignUpView> {
                   ),
 
                   const SizedBox(height: 45),
-
-                
 
                   const Text(
                     "Email",
@@ -490,9 +487,26 @@ class _SignUpViewState extends State<SignUpView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      socialButton("assets/google.png"),
-                      socialButton("assets/apple.png"),
-                      socialButton("assets/facebook.png"),
+                      BlocBuilder<AuthBloc, AuthState>(
+                        builder: (context, state) {
+                          return socialButton(
+                            "assets/google.png",
+                            state is AuthLoading
+                                ? null
+                                : () {
+                                    context.read<AuthBloc>().add(
+                                      GoogleSignInRequested(),
+                                    );
+                                  },
+                          );
+                        },
+                      ),
+
+                      socialButton("assets/apple.png", null),
+
+                      socialButton("assets/facebook.png", () {
+                        context.read<AuthBloc>().add(FacebookSignInRequested());
+                      }),
                     ],
                   ),
 
@@ -541,17 +555,23 @@ class _SignUpViewState extends State<SignUpView> {
     );
   }
 
-  Widget socialButton(String image) {
-    return Container(
-      height: 62,
-      width: 62,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Image.asset(image),
+  Widget socialButton(String image, VoidCallback? onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Opacity(
+        opacity: onTap == null ? 0.5 : 1,
+        child: Container(
+          height: 62,
+          width: 62,
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Image.asset(image),
+          ),
+        ),
       ),
     );
   }

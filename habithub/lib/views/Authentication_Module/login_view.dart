@@ -361,16 +361,28 @@ class _LoginViewState extends State<LoginView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      socialButton("assets/google.png", () {
-                        context.read<AuthBloc>().add(GoogleSignInRequested());
+                      BlocBuilder<AuthBloc, AuthState>(
+                        builder: (context, state) {
+                          return socialButton(
+                            "assets/google.png",
+                            state is AuthLoading
+                                ? null
+                                : () {
+                                    context.read<AuthBloc>().add(
+                                      GoogleSignInRequested(),
+                                    );
+                                  },
+                          );
+                        },
+                      ),
+
+                      socialButton("assets/apple.png", null),
+
+                      socialButton("assets/facebook.png", () {
+                        context.read<AuthBloc>().add(FacebookSignInRequested());
                       }),
-
-                      socialButton("assets/apple.png", () {}),
-
-                      socialButton("assets/facebook.png", () {}),
                     ],
                   ),
-
                   const SizedBox(height: 45),
                   Center(
                     child: RichText(
@@ -406,19 +418,22 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget socialButton(String image, VoidCallback onTap) {
+  Widget socialButton(String image, VoidCallback? onTap) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        height: 62,
-        width: 62,
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Image.asset(image),
+      child: Opacity(
+        opacity: onTap == null ? 0.5 : 1,
+        child: Container(
+          height: 62,
+          width: 62,
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Image.asset(image),
+          ),
         ),
       ),
     );

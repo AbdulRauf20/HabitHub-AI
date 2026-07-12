@@ -7,7 +7,6 @@ import '../services/firestore_service.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService _authService;
   final FirestoreService _firestoreService = FirestoreService();
-  
 
   AuthBloc({required AuthService authService})
     : _authService = authService,
@@ -21,6 +20,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LogoutRequested>(_onLogoutRequested);
     on<ResendVerificationEmailRequested>(_onResendVerificationEmailRequested);
     on<GoogleSignInRequested>(_onGoogleSignInRequested);
+    on<FacebookSignInRequested>(_onFacebookSignInRequested);
   }
   Future<void> _onResendVerificationEmailRequested(
     ResendVerificationEmailRequested event,
@@ -36,6 +36,49 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthFailure(message: e.toString()));
     }
   }
+  Future<void> _onFacebookSignInRequested(
+  FacebookSignInRequested event,
+  Emitter<AuthState> emit,
+) async {
+  emit(AuthLoading());
+
+  try {
+    final userCredential =
+        await _authService.signInWithFacebook();
+
+    final user = userCredential.user;
+
+    if (user == null) {
+      emit(AuthFailure(message: "Facebook sign in failed."));
+      return;
+    }
+
+    final isNewUser =
+        userCredential.additionalUserInfo?.isNewUser ?? false;
+
+    if (isNewUser) {
+      emit(ProfileIncomplete());
+      return;
+    }
+
+    final profileCompleted =
+        await _firestoreService.isProfileCompleted(user.uid);
+
+    if (!profileCompleted) {
+      emit(ProfileIncomplete());
+      return;
+    }
+
+    emit(
+      Authenticated(
+        emailVerified: true,
+        profileCompleted: true,
+      ),
+    );
+  } catch (e) {
+    emit(AuthFailure(message: e.toString()));
+  }
+}
 
   /// Login
   Future<void> _onLoginRequested(
@@ -76,49 +119,44 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthFailure(message: e.toString()));
     }
   }
+
   Future<void> _onGoogleSignInRequested(
-  GoogleSignInRequested event,
-  Emitter<AuthState> emit,
-) async {
-  emit(AuthLoading());
+    GoogleSignInRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
 
-  try {
-    final userCredential =
-        await _authService.signInWithGoogle();
+    try {
+      final userCredential = await _authService.signInWithGoogle();
 
-    final user = userCredential.user;
+      final user = userCredential.user;
 
-    if (user == null) {
-      emit(AuthFailure(message: "Google sign in failed."));
-      return;
+      if (user == null) {
+        emit(AuthFailure(message: "Google sign in failed."));
+        return;
+      }
+
+      final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
+
+      if (isNewUser) {
+        emit(ProfileIncomplete());
+        return;
+      }
+
+      final profileCompleted = await _firestoreService.isProfileCompleted(
+        user.uid,
+      );
+
+      if (!profileCompleted) {
+        emit(ProfileIncomplete());
+        return;
+      }
+
+      emit(Authenticated(emailVerified: true, profileCompleted: true));
+    } catch (e) {
+      emit(AuthFailure(message: e.toString()));
     }
-
-    final isNewUser =
-        userCredential.additionalUserInfo?.isNewUser ?? false;
-
-    if (isNewUser) {
-      emit(ProfileIncomplete());
-      return;
-    }
-
-    final profileCompleted =
-        await _firestoreService.isProfileCompleted(user.uid);
-
-    if (!profileCompleted) {
-      emit(ProfileIncomplete());
-      return;
-    }
-
-    emit(
-      Authenticated(
-        emailVerified: true,
-        profileCompleted: true,
-      ),
-    );
-  } catch (e) {
-    emit(AuthFailure(message: e.toString()));
   }
-}
 
   /// Signup
   Future<void> _onSignupRequested(
@@ -165,43 +203,37 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   /// Check if user is already logged in
- Future<void> _onCheckAuthStatusRequested(
-  CheckAuthStatusRequested event,
-  Emitter<AuthState> emit,
-) async {
-  emit(AuthLoading());
+  Future<void> _onCheckAuthStatusRequested(
+    CheckAuthStatusRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
 
-  try {
-    final user = await _authService.getCurrentUser();
+    try {
+      final user = await _authService.getCurrentUser();
 
-    if (user == null) {
-      emit(Unauthenticated());
-      return;
+      if (user == null) {
+        emit(Unauthenticated());
+        return;
+      }
+
+      if (!user.emailVerified) {
+        emit(EmailNotVerified());
+        return;
+      }
+
+      final isCompleted = await _firestoreService.isProfileCompleted(user.uid);
+
+      if (!isCompleted) {
+        emit(ProfileIncomplete());
+        return;
+      }
+
+      emit(Authenticated(emailVerified: true, profileCompleted: true));
+    } catch (e) {
+      emit(AuthFailure(message: e.toString()));
     }
-
-    if (!user.emailVerified) {
-      emit(EmailNotVerified());
-      return;
-    }
-
-    final isCompleted =
-        await _firestoreService.isProfileCompleted(user.uid);
-
-    if (!isCompleted) {
-      emit(ProfileIncomplete());
-      return;
-    }
-
-    emit(
-      Authenticated(
-        emailVerified: true,
-        profileCompleted: true,
-      ),
-    );
-  } catch (e) {
-    emit(AuthFailure(message: e.toString()));
   }
-}
 
   /// Check Email Verification
   Future<void> _onCheckEmailVerificationRequested(
@@ -247,3 +279,4 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 }
+

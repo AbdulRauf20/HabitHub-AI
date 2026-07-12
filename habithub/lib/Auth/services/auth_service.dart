@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
@@ -135,22 +136,35 @@ class AuthService {
     }
   }
 
-Future<UserCredential> signInWithGoogle() async {
-  final GoogleSignInAccount? googleUser =
-      await GoogleSignIn().signIn();
+  Future<UserCredential> signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-  if (googleUser == null) {
-    throw Exception("Google sign in cancelled");
+    if (googleUser == null) {
+      throw Exception("Google sign in cancelled");
+    }
+
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    return await _auth.signInWithCredential(credential);
   }
 
-  final GoogleSignInAuthentication googleAuth =
-      await googleUser.authentication;
+  Future<UserCredential> signInWithFacebook() async {
+    final LoginResult loginResult = await FacebookAuth.instance.login();
 
-  final credential = GoogleAuthProvider.credential(
-    accessToken: googleAuth.accessToken,
-    idToken: googleAuth.idToken,
-  );
+    if (loginResult.status != LoginStatus.success) {
+      throw Exception("Facebook sign in cancelled.");
+    }
 
-  return await _auth.signInWithCredential(credential);
-}
+    final OAuthCredential credential = FacebookAuthProvider.credential(
+      loginResult.accessToken!.tokenString,
+    );
+
+    return await _auth.signInWithCredential(credential);
+  }
 }
