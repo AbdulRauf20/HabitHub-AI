@@ -5,7 +5,7 @@ class UserModel {
   final String fullName;
   final String username;
   final String email;
-  final String? photoUrl;
+  final String profileImage;
   final String? gender;
   final DateTime? birthDate;
   final bool profileCompleted;
@@ -16,7 +16,7 @@ class UserModel {
   final int totalHabits;
   final Timestamp createdAt;
   final String goal;
-  final String bio; 
+  final String bio;
 
   UserModel({
     required this.bio,
@@ -24,7 +24,7 @@ class UserModel {
     required this.fullName,
     required this.username,
     required this.email,
-    this.photoUrl,
+    required this.profileImage,
     this.gender,
     this.birthDate,
     required this.profileCompleted,
@@ -34,7 +34,7 @@ class UserModel {
     required this.coins,
     required this.totalHabits,
     required this.createdAt,
-    required this.goal, required String profileImage,
+    required this.goal,
   });
 
   Map<String, dynamic> toMap() {
@@ -43,7 +43,7 @@ class UserModel {
       'fullName': fullName,
       'username': username,
       'email': email,
-      'photoUrl': photoUrl,
+      'profileImage': profileImage,
       'gender': gender,
       'birthDate': birthDate,
       'profileCompleted': profileCompleted,
@@ -53,18 +53,19 @@ class UserModel {
       'coins': coins,
       'totalHabits': totalHabits,
       'createdAt': createdAt,
-      'goal' : goal,
+      'goal': goal,
+      'bio': bio,
     };
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      bio: map['bio'],
-      uid: map['uid'],
+      bio: map['bio'] ?? "",
+      uid: map['uid'] ?? "",
       fullName: map['fullName'],
       username: map['username'],
       email: map['email'],
-      photoUrl: map['photoUrl'],
+      profileImage: map['profileImage'] ?? "",
       gender: map['gender'],
       birthDate: map['birthDate'] != null
           ? (map['birthDate'] as Timestamp).toDate()
@@ -75,7 +76,8 @@ class UserModel {
       level: map['level'] ?? 1,
       coins: map['coins'] ?? 0,
       totalHabits: map['totalHabits'] ?? 0,
-      createdAt: map['createdAt'] ?? Timestamp.now(), goal: map['goal'], profileImage: map['profileImage']
+      createdAt: map['createdAt'] ?? Timestamp.now(),
+      goal: map['goal'] ?? "",
     );
   }
 }
