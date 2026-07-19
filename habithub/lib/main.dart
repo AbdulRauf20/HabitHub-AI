@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habithub/Auth/Bloc/auth_bloc.dart';
 import 'package:habithub/Auth/services/auth_service.dart';
+import 'package:habithub/Auth/user_Bloc/user_bloc.dart';
 import 'package:habithub/firebase_options.dart';
 import 'package:habithub/views/splash_screen_view.dart';
 
@@ -12,11 +13,21 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(
-    BlocProvider(
-      create: (_) => AuthBloc(authService: AuthService()),
-      child: const MyApp(),
-    ),
-  );
+  MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (_) => AuthBloc(
+          authService: AuthService(),
+        ),
+      ),
+
+      BlocProvider(
+        create: (_) => UserBloc(),
+      ),
+    ],
+    child: const MyApp(),
+  ),
+);
 }
 
 class MyApp extends StatelessWidget {
