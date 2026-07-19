@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:habithub/Auth/models/user_model.dart';
 
 class FirestoreService {
@@ -78,6 +79,20 @@ class FirestoreService {
     }
   }
 
+Future<UserModel> getCurrentUser() async {
+  final uid = FirebaseAuth.instance.currentUser!.uid;
+
+  final doc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(uid)
+      .get();
+
+  if (!doc.exists) {
+    throw Exception("User not found.");
+  }
+
+  return UserModel.fromMap(doc.data()!);
+}
   // -------------------------
   // Check Profile Completion
   // -------------------------
