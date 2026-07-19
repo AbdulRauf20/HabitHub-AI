@@ -1,0 +1,163 @@
+===========================
+🔥 HABITHUB TODO (BEFORE HOME MODULE)
+===========================
+
+[ ] Fix UserModel constructor
+    - Add missing profileImage field OR rename to photoUrl consistently.
+
+[ ] Make image field consistent everywhere
+    - profileImage OR photoUrl
+    - Use only one name across:
+        • UserModel
+        • Firestore
+        • Storage
+        • CompleteProfile
+
+[ ] Save bio in Firestore
+    - Add bio to toMap().
+
+[ ] Save profile image URL in Firestore
+    - Add profileImage/photoUrl to toMap().
+
+[ ] Fix UserModel.fromMap()
+    - Read the same fields that are being saved.
+
+[ ] Fix CompleteProfileRequested event
+    - Store goal
+    - Store photo
+    - Remove unused constructor parameters if not needed.
+
+[ ] Decide architecture
+    - Either:
+        • Complete profile through BLoC
+      OR
+        • Remove unused CompleteProfileRequested event.
+
+[ ] Fix UserModel constructor parameters
+    - Remove incorrect required parameters.
+    - Match CompleteProfileView.
+
+===========================
+🐞 UI / UX FIXES
+===========================
+
+[ ] Username suffix icon
+    - Don't show red X before username is checked.
+
+[ ] Recheck username before saving profile
+    - Prevent race condition.
+
+[ ] Add loading state during profile creation
+    - Disable Continue button.
+    - Show CircularProgressIndicator.
+
+[ ] Make password eye button functional.
+
+[ ] Either implement Remember Me
+    OR
+    remove checkbox.
+
+[ ] Fix Forgot Password newline
+    "/n" -> "\n"
+
+[ ] Improve Splash loading animation
+    - Clean box animation.
+
+[ ] Replace SnackBars with custom dialogs later.
+
+===========================
+📦 DIALOGS
+===========================
+
+[ ] Design GenericDialog.
+
+[ ] Design GenericErrorDialog.
+
+[ ] Replace all SnackBars with dialogs.
+
+===========================
+🖼 PROFILE
+===========================
+
+[ ] Decide if profile image is required.
+
+[ ] Decide if bio is required.
+
+[ ] Prefill social login users
+    - Name
+    - Email
+    - Profile photo
+
+===========================
+🧭 NAVIGATION
+===========================
+
+[ ] Make navigation consistent
+    - pushReplacement
+    - pushAndRemoveUntil
+    - push
+
+===========================
+🔥 FIRESTORE
+===========================
+
+[ ] Create username index if required.
+
+[ ] Verify every field saves correctly:
+    - uid
+    - fullName
+    - username
+    - email
+    - bio
+    - goal
+    - gender
+    - profileImage
+    - streak
+    - xp
+    - level
+    - coins
+    - totalHabits
+    - createdAt
+    - profileCompleted
+
+===========================
+🧪 TESTING CHECKLIST
+===========================
+
+[ ] Email signup
+
+[ ] Email verification
+
+[ ] Login
+
+[ ] Forgot password
+
+[ ] Google login
+
+[ ] Facebook login
+
+[ ] Apple login
+
+[ ] Profile completion
+
+[ ] Image upload
+
+[ ] Firestore document creation
+
+[ ] Logout
+
+[ ] Splash auto-login
+
+[ ] Username availability
+
+===========================
+🚀 AFTER ALL OF THIS
+===========================
+
+➡️ Start Core App Development
+    [ ] Home Feed
+    [ ] Profile
+    [ ] Create Habit
+    [ ] Challenges
+    [ ] Community
+    [ ] Notifications
