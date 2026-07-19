@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habithub/Auth/models/user_model.dart';
 import 'package:habithub/Auth/services/firebase_storage.dart';
+import 'package:habithub/Auth/user_Bloc/user_bloc.dart';
+import 'package:habithub/Auth/user_Bloc/user_event.dart';
 import 'package:habithub/views/Home_Module/Home_feed.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
@@ -149,18 +152,16 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
       // Save in Firestore
       await _firestoreService.createUser(userModel);
 
-      // Success
+      context.read<UserBloc>().add(LoadUserRequested());
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Profile Completed Successfully")),
       );
 
       Navigator.pushReplacement(
-  context,
-  MaterialPageRoute(
-    builder: (_) => const HomeView(),
-  ),
-);
-
+        context,
+        MaterialPageRoute(builder: (_) => const HomeView()),
+      );
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -555,7 +556,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                   onPressed: _completeProfile,
+                    onPressed: _completeProfile,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.buttonPrimaryText,

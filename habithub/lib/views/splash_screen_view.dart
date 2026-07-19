@@ -4,6 +4,8 @@ import 'package:habithub/Auth/Bloc/auth_bloc.dart';
 import 'package:habithub/Auth/Bloc/auth_event.dart';
 import 'package:habithub/Auth/Bloc/auth_state.dart';
 import 'package:habithub/Auth/services/theme/app_colors.dart';
+import 'package:habithub/Auth/user_Bloc/user_bloc.dart';
+import 'package:habithub/Auth/user_Bloc/user_event.dart';
 import 'package:habithub/views/Authentication_Module/complete_profile_view.dart';
 import 'package:habithub/views/Authentication_Module/verify_email_view.dart';
 import 'dart:async';
@@ -66,6 +68,8 @@ class _SplashScreenViewState extends State<SplashScreenView> {
             MaterialPageRoute(builder: (_) => const CompleteProfileView()),
           );
         } else if (state is Authenticated) {
+          context.read<UserBloc>().add(LoadUserRequested());
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => const HomeView()),
