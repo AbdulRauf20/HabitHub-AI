@@ -6,6 +6,7 @@ import 'package:habithub/Auth/models/user_model.dart';
 import 'package:habithub/Auth/services/firebase_storage.dart';
 import 'package:habithub/Auth/user_Bloc/user_bloc.dart';
 import 'package:habithub/Auth/user_Bloc/user_event.dart';
+import 'package:habithub/Utils/dialog_helper.dart';
 import 'package:habithub/views/Home_Module/Home_feed.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
@@ -111,8 +112,10 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
 
     // Username must be available
     if (_isUsernameAvailable != true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please choose another username.")),
+      DialogHelper.showError(
+        context,
+        title: "Username Unavailable",
+        message: "Please choose a different username.",
       );
       return;
     }
@@ -154,8 +157,10 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
 
       context.read<UserBloc>().add(LoadUserRequested());
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Profile Completed Successfully")),
+      DialogHelper.showSuccess(
+        context,
+        title: "Welcome to HabitHub!",
+        message: "Your profile has been created successfully.",
       );
 
       Navigator.pushReplacement(
@@ -163,9 +168,11 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
         MaterialPageRoute(builder: (_) => const HomeView()),
       );
     } catch (e) {
-      ScaffoldMessenger.of(
+      DialogHelper.showError(
         context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+        title: "Something went wrong",
+        message: e.toString(),
+      );
     }
   }
 
