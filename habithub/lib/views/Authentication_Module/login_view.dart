@@ -6,6 +6,7 @@ import 'package:habithub/Auth/Bloc/auth_state.dart';
 import 'package:habithub/Auth/services/theme/app_colors.dart';
 import 'package:habithub/Auth/user_Bloc/user_bloc.dart';
 import 'package:habithub/Auth/user_Bloc/user_event.dart';
+import 'package:habithub/Utils/dialog_helper.dart';
 import 'package:habithub/views/Authentication_Module/Forgot_password_view.dart';
 import 'package:habithub/views/Authentication_Module/complete_profile_view.dart';
 import 'package:habithub/views/Authentication_Module/verify_email_view.dart';
@@ -39,9 +40,11 @@ class _LoginViewState extends State<LoginView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthFailure) {
-          ScaffoldMessenger.of(
+          DialogHelper.showError(
             context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+            title: "Login Failed",
+            message: state.message,
+          );
         }
 
         if (state is EmailNotVerified) {
@@ -60,13 +63,18 @@ class _LoginViewState extends State<LoginView> {
         if (state is Authenticated) {
           context.read<UserBloc>().add(LoadUserRequested());
 
-          ScaffoldMessenger.of(
+          DialogHelper.showSuccess(
             context,
-          ).showSnackBar(const SnackBar(content: Text("Login Successful")));
+            title: "Welcome Back!",
+            message: "You've successfully logged into HabitHub.",
+            onPressed: () {
+              Navigator.pop(context); // Close the dialog
 
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const HomeView()),
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const HomeView()),
+              );
+            },
           );
         }
       },
