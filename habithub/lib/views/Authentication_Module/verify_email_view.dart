@@ -4,6 +4,7 @@ import 'package:habithub/Auth/Bloc/auth_bloc.dart' show AuthBloc;
 import 'package:habithub/Auth/Bloc/auth_event.dart';
 import 'package:habithub/Auth/Bloc/auth_state.dart';
 import 'package:habithub/Auth/services/theme/app_colors.dart';
+import 'package:habithub/Utils/dialog_helper.dart';
 import 'package:habithub/views/Authentication_Module/complete_profile_view.dart';
 import 'package:habithub/views/Authentication_Module/signup_view.dart';
 
@@ -19,17 +20,33 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
+
+        if (state is AuthFailure) {
+          DialogHelper.showError(
+            context,
+            title: "Verification Failed",
+            message: state.message,
+          );
+        }
+        if (state is EmailNotVerified) {
+          DialogHelper.showError(
+            context,
+            title: "Email verification required",
+            message:
+                "You need to verify your email before proceeding. Please check your inbox and click on the verification link to verify your email address.",
+          );
+        }
         if (state is ProfileIncomplete) {
+          DialogHelper.showSuccess(
+            context,
+            title: "Email verification successful",
+            message:
+                "Your email has been verified successfully. You can now proceed to complete your profile.",
+          );
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => const CompleteProfileView()),
           );
-        }
-
-        if (state is AuthFailure) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
         }
       },
       child: Scaffold(

@@ -5,9 +5,11 @@ import 'package:habithub/Auth/Bloc/auth_bloc.dart';
 import 'package:habithub/Auth/Bloc/auth_event.dart';
 import 'package:habithub/Auth/Bloc/auth_state.dart';
 import 'package:habithub/Auth/services/theme/app_colors.dart';
+import 'package:habithub/Utils/dialog_helper.dart';
 import 'package:habithub/views/Authentication_Module/login_view.dart';
 import 'package:habithub/views/Authentication_Module/verify_email_view.dart';
 import 'package:habithub/views/Authentication_Module/welcome_view.dart';
+
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
 
@@ -97,12 +99,20 @@ class _SignUpViewState extends State<SignUpView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+          DialogHelper.showError(
+            context,
+            title: "Signup Failed",
+            message: state.message,
           );
         }
 
         if (state is EmailNotVerified) {
+          DialogHelper.showSuccess(
+            context,
+            title: "Verify your email",
+            message:
+                "We have sent a verification email to your inbox. Please check your inbox and click on the verification link to verify your email address.",
+          );
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => const VerifyEmailView()),

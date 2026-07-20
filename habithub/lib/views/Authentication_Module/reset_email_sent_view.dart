@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habithub/Auth/services/theme/app_colors.dart';
+import 'package:habithub/Utils/dialog_helper.dart';
 import 'package:habithub/views/Authentication_Module/login_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,9 +18,11 @@ class _ResetEmailSentViewState extends State<ResetEmailSentView> {
     if (await canLaunchUrl(emailApp)) {
       await launchUrl(emailApp);
     } else {
-      ScaffoldMessenger.of(
+      DialogHelper.showError(
         context,
-      ).showSnackBar(const SnackBar(content: Text("No email app found.")));
+        title: "Email App Not Found",
+        message: "No email application is installed on this device.",
+      );
     }
   }
 

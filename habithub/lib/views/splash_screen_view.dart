@@ -6,6 +6,7 @@ import 'package:habithub/Auth/Bloc/auth_state.dart';
 import 'package:habithub/Auth/services/theme/app_colors.dart';
 import 'package:habithub/Auth/user_Bloc/user_bloc.dart';
 import 'package:habithub/Auth/user_Bloc/user_event.dart';
+import 'package:habithub/Utils/dialog_helper.dart';
 import 'package:habithub/views/Authentication_Module/complete_profile_view.dart';
 import 'package:habithub/views/Authentication_Module/verify_email_view.dart';
 import 'dart:async';
@@ -75,9 +76,11 @@ class _SplashScreenViewState extends State<SplashScreenView> {
             MaterialPageRoute(builder: (_) => const HomeView()),
           );
         } else if (state is AuthFailure) {
-          ScaffoldMessenger.of(
+          DialogHelper.showError(
             context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+            title: "Login Failed",
+            message: state.message,
+          );
         }
       },
       child: Scaffold(
