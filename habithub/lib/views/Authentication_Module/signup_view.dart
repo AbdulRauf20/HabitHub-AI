@@ -99,6 +99,7 @@ class _SignUpViewState extends State<SignUpView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthFailure) {
+          DialogHelper.hideLoading(context);
           DialogHelper.showError(
             context,
             title: "Signup Failed",
@@ -107,15 +108,22 @@ class _SignUpViewState extends State<SignUpView> {
         }
 
         if (state is EmailNotVerified) {
+          DialogHelper.hideLoading(context);
+
           DialogHelper.showSuccess(
             context,
-            title: "Verify your email",
+            title: "Account Created!",
             message:
-                "We have sent a verification email to your inbox. Please check your inbox and click on the verification link to verify your email address.",
-          );
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const VerifyEmailView()),
+                "We've sent a verification email. Please verify your email to continue.",
+            buttonText: "Continue",
+            onPressed: () {
+              Navigator.pop(context);
+
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const VerifyEmailView()),
+              );
+            },
           );
         }
       },

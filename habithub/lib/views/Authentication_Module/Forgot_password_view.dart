@@ -31,6 +31,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is Unauthenticated) {
+          DialogHelper.hideLoading(context);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const ResetEmailSentView()),
@@ -38,6 +39,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         }
 
         if (state is AuthFailure) {
+          DialogHelper.hideLoading(context);
+
           DialogHelper.showError(
             context,
             title: "Reset Failed",
@@ -179,6 +182,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (!_formKey.currentState!.validate()) return;
+
+                          DialogHelper.showLoading(
+                            context,
+                            title: "Sending Reset Link",
+                            message:
+                                "Please wait while we send your password reset email...",
+                          );
 
                           context.read<AuthBloc>().add(
                             ForgotPasswordRequested(
