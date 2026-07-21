@@ -115,10 +115,16 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
       DialogHelper.showError(
         context,
         title: "Username Unavailable",
-        message: "Please choose a different username.",
+        message: "Please choose another username.",
       );
       return;
     }
+
+    DialogHelper.showLoading(
+      context,
+      title: "Creating Your Profile",
+      message: "Please wait while we prepare your HabitHub account...",
+    );
 
     try {
       // Current Firebase user
@@ -154,6 +160,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
 
       // Save in Firestore
       await _firestoreService.createUser(userModel);
+      DialogHelper.hideLoading(context);
 
       context.read<UserBloc>().add(LoadUserRequested());
 
@@ -161,16 +168,22 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
         context,
         title: "Welcome to HabitHub!",
         message: "Your profile has been created successfully.",
-      );
+        buttonText: "Start My Journey",
+        onPressed: () {
+          Navigator.pop(context);
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeView()),
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const HomeView()),
+          );
+        },
       );
     } catch (e) {
+      DialogHelper.hideLoading(context);
+
       DialogHelper.showError(
         context,
-        title: "Something went wrong",
+        title: "Something Went Wrong",
         message: e.toString(),
       );
     }

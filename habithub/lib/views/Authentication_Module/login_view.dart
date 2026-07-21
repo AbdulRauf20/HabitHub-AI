@@ -40,6 +40,8 @@ class _LoginViewState extends State<LoginView> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthFailure) {
+          DialogHelper.hideLoading(context);
+
           DialogHelper.showError(
             context,
             title: "Login Failed",
@@ -61,20 +63,19 @@ class _LoginViewState extends State<LoginView> {
         }
 
         if (state is Authenticated) {
+          DialogHelper.hideLoading(context);
+
           context.read<UserBloc>().add(LoadUserRequested());
 
           DialogHelper.showSuccess(
             context,
             title: "Welcome Back!",
-            message: "You've successfully logged into HabitHub.",
-            onPressed: () {
-              Navigator.pop(context); // Close the dialog
+            message: "Glad to see you again.",
+          );
 
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const HomeView()),
-              );
-            },
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const HomeView()),
           );
         }
       },
@@ -301,14 +302,19 @@ class _LoginViewState extends State<LoginView> {
                     height: 58,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          context.read<AuthBloc>().add(
-                            LoginRequested(
-                              email: _emailController.text.trim(),
-                              password: _passwordController.text,
-                            ),
-                          );
-                        }
+                        if (!_formKey.currentState!.validate()) return;
+
+                        DialogHelper.showLoading(
+                          context,
+                          message: "Signing you in...",
+                        );
+
+                        context.read<AuthBloc>().add(
+                          LoginRequested(
+                            email: _emailController.text.trim(),
+                            password: _passwordController.text,
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,

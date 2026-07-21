@@ -18,15 +18,16 @@ class DialogHelper {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => LoadingDialog(
-        title: title,
-        message: message,
-      ),
+      builder: (_) => LoadingDialog(title: title, message: message),
     );
   }
 
   static void hideLoading(BuildContext context) {
-    Navigator.of(context, rootNavigator: true).pop();
+    final navigator = Navigator.of(context, rootNavigator: true);
+
+    if (navigator.canPop()) {
+      navigator.pop();
+    }
   }
 
   // ----------------------------
