@@ -11,7 +11,7 @@ import 'package:habithub/views/Authentication_Module/complete_profile_view.dart'
 import 'package:habithub/views/Authentication_Module/verify_email_view.dart';
 import 'dart:async';
 import 'package:habithub/views/Authentication_Module/welcome_view.dart';
-import 'package:habithub/views/Home_Module/home_view.dart';
+import 'package:habithub/views/main_navigation_view.dart';
 
 class SplashScreenView extends StatefulWidget {
   const SplashScreenView({super.key});
@@ -73,7 +73,7 @@ class _SplashScreenViewState extends State<SplashScreenView> {
 
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const HomeView()),
+            MaterialPageRoute(builder: (_) => const MainNavigationView()),
           );
         } else if (state is AuthFailure) {
           DialogHelper.showError(

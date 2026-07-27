@@ -11,7 +11,7 @@ import 'package:habithub/views/Authentication_Module/Forgot_password_view.dart';
 import 'package:habithub/views/Authentication_Module/complete_profile_view.dart';
 import 'package:habithub/views/Authentication_Module/verify_email_view.dart';
 import 'package:habithub/views/Authentication_Module/welcome_view.dart';
-import 'package:habithub/views/Home_Module/home_view.dart';
+import 'package:habithub/views/main_navigation_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -75,7 +75,7 @@ class _LoginViewState extends State<LoginView> {
 
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const HomeView()),
+            MaterialPageRoute(builder: (_) => const MainNavigationView()),
           );
         }
       },
