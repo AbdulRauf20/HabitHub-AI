@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habithub/views/Home_Module/widgets/app_top_bar.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -10,9 +11,15 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text("Profile View"),
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            AppTopBar(),
+
+            Expanded(child: Center(child: Text("Profile"))),
+          ],
+        ),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habithub/views/Home_Module/widgets/app_top_bar.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -6,7 +7,15 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(child: Text("Home Screen", style: TextStyle(fontSize: 22))),
+      body: SafeArea(
+        child: Column(
+          children: [
+            AppTopBar(),
+
+            Expanded(child: Center(child: Text("Home Screen"))),
+          ],
+        ),
+      ),
     );
   }
 }

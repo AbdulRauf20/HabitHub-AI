@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habithub/views/Home_Module/widgets/app_top_bar.dart';
 
 class CommunityView extends StatefulWidget {
   const CommunityView({super.key});
@@ -10,6 +11,16 @@ class CommunityView extends StatefulWidget {
 class _CommunityViewState extends State<CommunityView> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            AppTopBar(),
+
+            Expanded(child: Center(child: Text("Community"))),
+          ],
+        ),
+      ),
+    );
   }
 }
