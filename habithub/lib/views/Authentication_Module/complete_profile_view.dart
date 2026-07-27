@@ -7,7 +7,7 @@ import 'package:habithub/Auth/services/firebase_storage.dart';
 import 'package:habithub/Auth/user_Bloc/user_bloc.dart';
 import 'package:habithub/Auth/user_Bloc/user_event.dart';
 import 'package:habithub/Utils/dialog_helper.dart';
-import 'package:habithub/views/Home_Module/Home_feed.dart';
+import 'package:habithub/views/Home_Module/home_view.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
