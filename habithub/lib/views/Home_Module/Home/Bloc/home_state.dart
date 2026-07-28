@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:habithub/models/%20home_model.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();
@@ -7,40 +8,27 @@ abstract class HomeState extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Initial
+/// Initial State
 class HomeInitial extends HomeState {}
 
-/// Loading
+/// Loading State
 class HomeLoading extends HomeState {}
 
-/// Loaded
+/// Loaded State
 class HomeLoaded extends HomeState {
-  final String userName;
-  final int streak;
-  final int xp;
-  final String badge;
+  final HomeModel home;
 
-  const HomeLoaded({
-    required this.userName,
-    required this.streak,
-    required this.xp,
-    required this.badge,
-  });
+  const HomeLoaded({required this.home});
 
   @override
-  List<Object?> get props => [
-        userName,
-        streak,
-        xp,
-        badge,
-      ];
+  List<Object?> get props => [home];
 }
 
-/// Error
+/// Error State
 class HomeError extends HomeState {
   final String message;
 
-  const HomeError(this.message);
+  const HomeError({required this.message});
 
   @override
   List<Object?> get props => [message];
