@@ -5,8 +5,9 @@ class HomeModel {
   final int xp;
   final int level;
   final String badge;
-
+  final int leaderboardRank;
   const HomeModel({
+    required this.leaderboardRank,
     required this.fullName,
     required this.currentStreak,
     required this.longestStreak,
@@ -17,6 +18,7 @@ class HomeModel {
 
   factory HomeModel.fromMap(Map<String, dynamic> map) {
     return HomeModel(
+      leaderboardRank: map['leaderboardRank'] ?? 0,
       fullName: map['fullName'] ?? '',
       currentStreak: map['currentStreak'] ?? 0,
       longestStreak: map['longestStreak'] ?? 0,
@@ -34,6 +36,7 @@ class HomeModel {
       'xp': xp,
       'level': level,
       'badge': badge,
+      'leaderboardRank': leaderboardRank,
     };
   }
 }
