@@ -1,5 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+abstract class FirestoreCollections {
+  static const String users = 'users';
+}
+
 class FirestoreService {
   FirestoreService._();
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:habithub/services/firestore_service.dart';
 import 'package:habithub/views/Home_Module/Home/Bloc/home_bloc.dart';
 import 'package:habithub/views/Home_Module/Home/Bloc/home_event.dart';
 import 'package:habithub/views/Home_Module/Home/Bloc/home_state.dart';
@@ -13,7 +14,7 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider(
-      create: (_) => HomeRepository(),
+      create: (_) => HomeRepository(firestoreService: FirestoreService.instance),
 
       child: BlocProvider(
         create: (context) =>

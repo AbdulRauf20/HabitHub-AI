@@ -1,27 +1,34 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:habithub/models/%20home_model.dart';
+import 'package:habithub/services/firestore_service.dart';
 
 class HomeRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirestoreService _firestoreService;
+  final FirebaseAuth _auth;
 
+  HomeRepository({
+    required FirestoreService firestoreService,
+    FirebaseAuth? auth,
+  }) : _firestoreService = firestoreService,
+       _auth = auth ?? FirebaseAuth.instance;
+
+  /// Fetches dashboard data for the currently logged-in user.
   Future<HomeModel> getHomeData() async {
-    final user = _auth.currentUser;
+    final currentUser = _auth.currentUser;
 
-    if (user == null) {
-      throw Exception("User not logged in.");
+    if (currentUser == null) {
+      throw Exception('User is not logged in.');
     }
 
-    final doc = await _firestore
-        .collection('users')
-        .doc(user.uid)
-        .get();
+    final document = await _firestoreService.getDocument(
+      collection: FirestoreCollections.users,
+      documentId: currentUser.uid,
+    );
 
-    if (!doc.exists) {
-      throw Exception("User data not found.");
+    if (!document.exists || document.data() == null) {
+      throw Exception('User document not found.');
     }
 
-    return HomeModel.fromMap(doc.data()!);
+    return HomeModel.fromMap(document.data()!);
   }
 }
