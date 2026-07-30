@@ -14,7 +14,8 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider(
-      create: (_) => HomeRepository(firestoreService: FirestoreService.instance),
+      create: (_) =>
+          HomeRepository(firestoreService: FirestoreService.instance),
 
       child: BlocProvider(
         create: (context) =>
@@ -46,24 +47,33 @@ class _HomeViewBody extends StatelessWidget {
 
             if (state is HomeLoaded) {
               return SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-
                   children: [
                     const AppTopBar(),
 
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
 
                     DashboardCard(home: state.home),
+
+                    const SizedBox(height: 28),
+
+                    // Joined Challenges Section
+                    // Coming next...
                   ],
                 ),
               );
             }
 
-            return const SizedBox();
+            return const SizedBox.shrink();
           },
         ),
       ),
     );
   }
 }
+ 
