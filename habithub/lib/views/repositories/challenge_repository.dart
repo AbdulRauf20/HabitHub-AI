@@ -124,9 +124,9 @@ class ChallengeRepository {
       final taskId = taskMap['taskId'] ?? taskMap['id'] ?? '';
 
       return TodayTaskPreviewModel(
-        taskId: taskId,
+        id: taskId,
         title: taskMap['title'] ?? '',
-        isCompleted: completedMap[taskId] ?? false, id: '',
+        isCompleted: completedMap[taskId] ?? false,
       );
     }).toList();
   }

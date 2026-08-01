@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:habithub/services/firestore_service.dart';
+
 import 'package:habithub/views/Home_Module/Home/Bloc/home_bloc.dart';
 import 'package:habithub/views/Home_Module/Home/Bloc/home_event.dart';
 import 'package:habithub/views/Home_Module/Home/Bloc/home_state.dart';
+
 import 'package:habithub/views/Home_Module/Home/home_widgets/dashboard_card.dart';
+import 'package:habithub/views/Home_Module/Home/home_widgets/joined_challenges_section.dart';
 import 'package:habithub/views/Home_Module/widgets/app_top_bar.dart';
+import 'package:habithub/views/repositories/challenge_repository.dart';
 import 'package:habithub/views/repositories/home_repository.dart';
 
 class HomeView extends StatelessWidget {
@@ -13,14 +18,24 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (_) =>
-          HomeRepository(firestoreService: FirestoreService.instance),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<HomeRepository>(
+          create: (_) =>
+              HomeRepository(firestoreService: FirestoreService.instance),
+        ),
+
+        RepositoryProvider<ChallengeRepository>(
+          create: (_) =>
+              ChallengeRepository(firestoreService: FirestoreService.instance),
+        ),
+      ],
 
       child: BlocProvider(
-        create: (context) =>
-            HomeBloc(repository: context.read<HomeRepository>())
-              ..add(const LoadHomeData()),
+        create: (context) => HomeBloc(
+          homeRepository: context.read<HomeRepository>(),
+          challengeRepository: context.read<ChallengeRepository>(),
+        )..add(const LoadHomeData()),
 
         child: const _HomeViewBody(),
       ),
@@ -46,34 +61,52 @@ class _HomeViewBody extends StatelessWidget {
             }
 
             if (state is HomeLoaded) {
-              return SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AppTopBar(),
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<HomeBloc>().add(const RefreshHome());
+                },
 
-                    const SizedBox(height: 20),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
 
-                    DashboardCard(home: state.home),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 24),
 
-                    const SizedBox(height: 28),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
 
-                    // Joined Challenges Section
-                    // Coming next...
-                  ],
+                      children: [
+                        const AppTopBar(),
+
+                        const SizedBox(height: 10),
+
+                        DashboardCard(home: state.home),
+
+                        const SizedBox(height: 24),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+
+                          child: JoinedChallengesSection(
+                            challenges: state.challenges,
+
+                            onViewAll: () {
+                              // We'll connect navigation
+                              // to ChallengesView later.
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               );
             }
 
-            return const SizedBox.shrink();
+            return const SizedBox();
           },
         ),
       ),
     );
   }
 }
- 

@@ -1,15 +1,18 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:habithub/models/%20home_model.dart';
+import 'package:habithub/views/repositories/challenge_repository.dart';
 import 'package:habithub/views/repositories/home_repository.dart';
+
 import 'home_event.dart';
 import 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final HomeRepository _repository;
+  final HomeRepository homeRepository;
+  final ChallengeRepository challengeRepository;
 
-  HomeBloc({required HomeRepository repository})
-    : _repository = repository,
-      super(HomeInitial()) {
+  HomeBloc({required this.homeRepository, required this.challengeRepository})
+    : super(const HomeInitial()) {
     on<LoadHomeData>(_onLoadHomeData);
     on<RefreshHome>(_onRefreshHome);
     on<CompleteHabit>(_onCompleteHabit);
@@ -19,12 +22,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     LoadHomeData event,
     Emitter<HomeState> emit,
   ) async {
-    emit(HomeLoading());
+    emit(const HomeLoading());
 
     try {
-      final HomeModel home = await _repository.getHomeData();
+      // Load dashboard data
+      final HomeModel home = await homeRepository.getHomeData();
 
-      emit(HomeLoaded(home: home));
+      // Load user's joined challenges
+      final challenges = await challengeRepository.getJoinedChallenges();
+
+      emit(HomeLoaded(home: home, challenges: challenges));
     } catch (e) {
       emit(HomeError(message: e.toString()));
     }
@@ -41,6 +48,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     CompleteHabit event,
     Emitter<HomeState> emit,
   ) async {
-    // TODO: Implement after ChallengeRepository is completed.
+    // Habit completion will be implemented
+    // when the habit/challenge completion system is connected.
   }
 }

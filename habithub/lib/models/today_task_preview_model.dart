@@ -8,7 +8,7 @@ class TodayTaskPreviewModel extends Equatable {
   const TodayTaskPreviewModel({
     required this.id,
     required this.title,
-    required this.isCompleted, required taskId,
+    required this.isCompleted,
   });
 
   TodayTaskPreviewModel copyWith({
@@ -19,7 +19,7 @@ class TodayTaskPreviewModel extends Equatable {
     return TodayTaskPreviewModel(
       id: id ?? this.id,
       title: title ?? this.title,
-      isCompleted: isCompleted ?? this.isCompleted, taskId: null,
+      isCompleted: isCompleted ?? this.isCompleted,
     );
   }
 
@@ -27,7 +27,7 @@ class TodayTaskPreviewModel extends Equatable {
     return TodayTaskPreviewModel(
       id: map['id'] ?? '',
       title: map['title'] ?? '',
-      isCompleted: map['isCompleted'] ?? false, taskId: null,
+      isCompleted: map['isCompleted'] ?? false,
     );
   }
 
