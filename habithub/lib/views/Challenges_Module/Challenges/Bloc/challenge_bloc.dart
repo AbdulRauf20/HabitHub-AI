@@ -1,0 +1,39 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:habithub/repositories/challenge_repository.dart';
+
+import 'challenge_event.dart';
+import 'challenge_state.dart';
+
+class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
+  final ChallengeRepository _repository;
+
+  ChallengeBloc({required ChallengeRepository repository})
+    : _repository = repository,
+      super(const ChallengeInitial()) {
+    on<LoadJoinedChallenges>(_onLoadJoinedChallenges);
+    on<RefreshChallenges>(_onRefreshChallenges);
+  }
+
+  Future<void> _onLoadJoinedChallenges(
+    LoadJoinedChallenges event,
+    Emitter<ChallengeState> emit,
+  ) async {
+    emit(const ChallengeLoading());
+
+    try {
+      final challenges = await _repository.getJoinedChallenges();
+
+      emit(ChallengeLoaded(challenges: challenges));
+    } catch (e) {
+      emit(ChallengeError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onRefreshChallenges(
+    RefreshChallenges event,
+    Emitter<ChallengeState> emit,
+  ) async {
+    add(const LoadJoinedChallenges());
+  }
+}
