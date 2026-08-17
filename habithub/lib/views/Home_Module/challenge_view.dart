@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:habithub/services/firestore_service.dart';
+import 'package:habithub/views/Challenges_Module/ChallengeDetails/challenge_details_view.dart';
 import 'package:habithub/views/Challenges_Module/Challenges/Bloc/challenge_bloc.dart';
 import 'package:habithub/views/Challenges_Module/Challenges/Bloc/challenge_event.dart';
 import 'package:habithub/views/Challenges_Module/Challenges/Bloc/challenge_state.dart';
+import 'package:habithub/views/Challenges_Module/challenge_widgets/challenge_card.dart';
 import 'package:habithub/views/Home_Module/widgets/app_top_bar.dart';
 import 'package:habithub/views/repositories/challenge_repository.dart';
 
@@ -102,57 +103,16 @@ class _ChallengeViewBody extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final challenge = state.challenges[index];
 
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  challenge.title,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-
-                                const SizedBox(height: 6),
-
-                                Text(
-                                  challenge.description,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-
-                                const SizedBox(height: 12),
-
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Day ${challenge.currentDay}/${challenge.totalDays}',
-                                    ),
-
-                                    const SizedBox(width: 16),
-
-                                    Text(
-                                      '${challenge.progress.toStringAsFixed(0)}%',
-                                    ),
-
-                                    const Spacer(),
-
-                                    Text('${challenge.streak} 🔥'),
-                                  ],
-                                ),
-
-                                const SizedBox(height: 10),
-
-                                LinearProgressIndicator(
-                                  value: challenge.progress.clamp(0.0, 1.0),
-                                ),
-                              ],
-                            ),
-                          ),
+                        return ChallengeCard(
+                          challenge: challenge,
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    ChallengeDetailsView(challenge: challenge),
+                              ),
+                            );
+                          },
                         );
                       },
                     );
