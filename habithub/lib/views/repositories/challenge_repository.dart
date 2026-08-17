@@ -86,6 +86,26 @@ class ChallengeRepository {
     return challenges;
   }
 
+  /// Marks a specific task within a joined challenge as completed.
+  Future<void> completeTask({
+    required String challengeId,
+    required String taskId,
+  }) async {
+    final user = _auth.currentUser;
+
+    if (user == null) {
+      throw Exception('User not logged in.');
+    }
+
+    await _firestoreService.updateDocument(
+      collection: 'users/${user.uid}/joinedChallenges',
+      documentId: challengeId,
+      data: {
+        'todayTaskProgress.$taskId': true,
+      },
+    );
+  }
+
   /// Loads today's task definitions and combines them with
   /// the user's completion state.
   Future<List<TodayTaskPreviewModel>> _getTodayTasks({

@@ -14,3 +14,16 @@ class LoadJoinedChallenges extends ChallengeEvent {
 class RefreshChallenges extends ChallengeEvent {
   const RefreshChallenges();
 }
+
+class CompleteChallengeTask extends ChallengeEvent {
+  final String challengeId;
+  final String taskId;
+
+  const CompleteChallengeTask({
+    required this.challengeId,
+    required this.taskId,
+  });
+
+  @override
+  List<Object?> get props => [challengeId, taskId];
+}

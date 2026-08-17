@@ -12,6 +12,23 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
       super(const ChallengeInitial()) {
     on<LoadJoinedChallenges>(_onLoadJoinedChallenges);
     on<RefreshChallenges>(_onRefreshChallenges);
+    on<CompleteChallengeTask>(_onCompleteChallengeTask);
+  }
+
+  Future<void> _onCompleteChallengeTask(
+    CompleteChallengeTask event,
+    Emitter<ChallengeState> emit,
+  ) async {
+    try {
+      await _repository.completeTask(
+        challengeId: event.challengeId,
+        taskId: event.taskId,
+      );
+
+      add(const LoadJoinedChallenges());
+    } catch (e) {
+      emit(ChallengeError(message: e.toString()));
+    }
   }
 
   Future<void> _onLoadJoinedChallenges(

@@ -4,9 +4,26 @@ import 'package:habithub/models/challenge_preview_model.dart';
 import 'package:habithub/views/Home_Module/widgets/app_top_bar.dart';
 
 class ChallengeDetailsView extends StatelessWidget {
+  static const ChallengePreviewModel defaultChallenge = ChallengePreviewModel(
+    challengeId: 'default',
+    title: 'Challenge Details',
+    description: 'Select a challenge to view details and track daily tasks.',
+    currentDay: 1,
+    totalDays: 30,
+    progress: 0.0,
+    streak: 0,
+    xpReward: 100,
+    isStarted: false,
+    daysRemaining: 30,
+    todayTasks: [],
+  );
+
   final ChallengePreviewModel challenge;
 
-  const ChallengeDetailsView({super.key, required this.challenge});
+  const ChallengeDetailsView({
+    super.key,
+    this.challenge = defaultChallenge,
+  });
 
   @override
   Widget build(BuildContext context) {

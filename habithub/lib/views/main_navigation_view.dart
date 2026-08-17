@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:habithub/views/Home_Module/Bloc/bottom_nav_bloc.dart';
 import 'package:habithub/views/Home_Module/Bloc/bottom_nav_state.dart';
 import 'package:habithub/views/Home_Module/challenge_view.dart';
@@ -23,7 +24,7 @@ class MainNavigationView extends StatelessWidget {
               index: state.currentIndex,
               children: const [
                 HomeView(),
-                ChallengeView(),
+                ChallengeDetailsView(),
                 CreateChallengeView(),
                 CommunityView(),
                 ProfileView(),

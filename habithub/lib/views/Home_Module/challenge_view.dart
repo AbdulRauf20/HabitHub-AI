@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:habithub/models/challenge_preview_model.dart';
 import 'package:habithub/services/firestore_service.dart';
-import 'package:habithub/views/Challenges_Module/ChallengeDetails/challenge_details_view.dart';
 import 'package:habithub/views/Challenges_Module/Challenges/Bloc/challenge_bloc.dart';
 import 'package:habithub/views/Challenges_Module/Challenges/Bloc/challenge_event.dart';
 import 'package:habithub/views/Challenges_Module/Challenges/Bloc/challenge_state.dart';
-import 'package:habithub/views/Challenges_Module/challenge_widgets/challenge_card.dart';
 import 'package:habithub/views/Home_Module/widgets/app_top_bar.dart';
 import 'package:habithub/views/repositories/challenge_repository.dart';
 
-class ChallengeView extends StatelessWidget {
-  const ChallengeView({super.key});
+class ChallengeDetailsView extends StatelessWidget {
+  final ChallengePreviewModel? challenge;
+
+  const ChallengeDetailsView({super.key, this.challenge});
 
   @override
   Widget build(BuildContext context) {
@@ -19,16 +21,17 @@ class ChallengeView extends StatelessWidget {
           ChallengeRepository(firestoreService: FirestoreService.instance),
       child: BlocProvider(
         create: (context) =>
-            ChallengeBloc(repository: context.read<ChallengeRepository>())
-              ..add(const LoadJoinedChallenges()),
-        child: const _ChallengeViewBody(),
+            ChallengeBloc(repository: context.read<ChallengeRepository>()),
+        child: _ChallengeDetailsBody(challenge: challenge!),
       ),
     );
   }
 }
 
-class _ChallengeViewBody extends StatelessWidget {
-  const _ChallengeViewBody();
+class _ChallengeDetailsBody extends StatelessWidget {
+  final ChallengePreviewModel challenge;
+
+  const _ChallengeDetailsBody({required this.challenge});
 
   @override
   Widget build(BuildContext context) {
@@ -41,86 +44,200 @@ class _ChallengeViewBody extends StatelessWidget {
             Expanded(
               child: BlocBuilder<ChallengeBloc, ChallengeState>(
                 builder: (context, state) {
-                  if (state is ChallengeLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (state is ChallengeError) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.error_outline, size: 48),
-
-                            const SizedBox(height: 16),
-
-                            const Text(
-                              'Unable to load challenges',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-
-                            const SizedBox(height: 10),
-
-                            Text(state.message, textAlign: TextAlign.center),
-
-                            const SizedBox(height: 20),
-
-                            ElevatedButton(
-                              onPressed: () {
-                                context.read<ChallengeBloc>().add(
-                                  const LoadJoinedChallenges(),
-                                );
-                              },
-                              child: const Text('Retry'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-
-                  if (state is ChallengeLoaded) {
-                    if (state.challenges.isEmpty) {
-                      return const Center(
-                        child: Text(
-                          'No challenges yet.',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      );
-                    }
-
-                    return ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: state.challenges.length,
-                      itemBuilder: (context, index) {
-                        final challenge = state.challenges[index];
-
-                        return ChallengeCard(
-                          challenge: challenge,
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    ChallengeDetailsView(challenge: challenge),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    );
-                  }
-
-                  return const SizedBox();
+                  return _buildContent(context);
                 },
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    final ChallengePreviewModel currentChallenge = challenge;
+
+    final progress = currentChallenge.progress.clamp(0.0, 1.0);
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            currentChallenge.title,
+            style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            currentChallenge.description,
+            style: TextStyle(
+              fontSize: 15,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Text(
+                        'Progress',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const Spacer(),
+
+                      Text(
+                        '${(progress * 100).toStringAsFixed(0)}%',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  LinearProgressIndicator(value: progress),
+
+                  const SizedBox(height: 12),
+
+                  Text(
+                    'Day ${currentChallenge.currentDay} '
+                    'of ${currentChallenge.totalDays}',
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          Row(
+            children: [
+              Expanded(
+                child: _StatCard(
+                  icon: Icons.local_fire_department_outlined,
+                  value: '${currentChallenge.streak}',
+                  label: 'Streak',
+                ),
+              ),
+
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: _StatCard(
+                  icon: Icons.star_outline,
+                  value: '${currentChallenge.xpReward}',
+                  label: 'XP Reward',
+                ),
+              ),
+
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: _StatCard(
+                  icon: Icons.calendar_today_outlined,
+                  value: '${currentChallenge.daysRemaining}',
+                  label: 'Days Left',
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 28),
+
+          const Text(
+            "Today's Tasks",
+            style: TextStyle(fontSize: 21, fontWeight: FontWeight.w800),
+          ),
+
+          const SizedBox(height: 14),
+
+          if (currentChallenge.todayTasks.isEmpty)
+            const Card(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Center(child: Text('No tasks for today.')),
+              ),
+            ),
+
+          ...currentChallenge.todayTasks.map(
+            (task) => Card(
+              margin: const EdgeInsets.only(bottom: 10),
+              child: CheckboxListTile(
+                value: task.isCompleted,
+                onChanged: task.isCompleted
+                    ? null
+                    : (_) {
+                        context.read<ChallengeBloc>().add(
+                          CompleteChallengeTask(
+                            challengeId: currentChallenge.challengeId,
+                            taskId: task.id,
+                          ),
+                        );
+                      },
+                controlAffinity: ListTileControlAffinity.leading,
+                title: Text(
+                  task.title,
+                  style: TextStyle(
+                    decoration: task.isCompleted
+                        ? TextDecoration.lineThrough
+                        : TextDecoration.none,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String value;
+  final String label;
+
+  const _StatCard({
+    required this.icon,
+    required this.value,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        child: Column(
+          children: [
+            Icon(icon, size: 22),
+
+            const SizedBox(height: 8),
+
+            Text(
+              value,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 4),
+
+            Text(
+              label,
+              style: const TextStyle(fontSize: 12),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
