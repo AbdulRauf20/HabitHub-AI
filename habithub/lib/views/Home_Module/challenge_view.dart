@@ -44,7 +44,16 @@ class _ChallengeDetailsBody extends StatelessWidget {
             Expanded(
               child: BlocBuilder<ChallengeBloc, ChallengeState>(
                 builder: (context, state) {
-                  return _buildContent(context);
+                  if (state is ChallengeLoaded) {
+                    final updatedChallenge = state.challenges.firstWhere(
+                      (item) => item.challengeId == challenge.challengeId,
+                      orElse: () => challenge,
+                    );
+
+                    return _buildContent(context, updatedChallenge);
+                  }
+
+                  return _buildContent(context, challenge);
                 },
               ),
             ),
@@ -54,9 +63,10 @@ class _ChallengeDetailsBody extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context) {
-    final ChallengePreviewModel currentChallenge = challenge;
-
+  Widget _buildContent(
+    BuildContext context,
+    ChallengePreviewModel currentChallenge,
+  ) {
     final progress = currentChallenge.progress.clamp(0.0, 1.0);
 
     return SingleChildScrollView(
