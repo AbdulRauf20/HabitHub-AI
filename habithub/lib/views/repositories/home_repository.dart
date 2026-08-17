@@ -1,34 +1,42 @@
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:habithub/models/%20home_model.dart';
 import 'package:habithub/services/firestore_service.dart';
+import 'package:habithub/views/repositories/challenge_repository.dart';
 
 class HomeRepository {
   final FirestoreService _firestoreService;
   final FirebaseAuth _auth;
+  final ChallengeRepository _challengeRepository;
 
   HomeRepository({
     required FirestoreService firestoreService,
     FirebaseAuth? auth,
+    required ChallengeRepository challengeRepository,
   }) : _firestoreService = firestoreService,
-       _auth = auth ?? FirebaseAuth.instance;
+       _auth = auth ?? FirebaseAuth.instance,
+       _challengeRepository = challengeRepository;
 
-  /// Fetches dashboard data for the currently logged-in user.
   Future<HomeModel> getHomeData() async {
-    final currentUser = _auth.currentUser;
+    final user = _auth.currentUser;
 
-    if (currentUser == null) {
-      throw Exception('User is not logged in.');
+    if (user == null) {
+      throw Exception('User not logged in.');
     }
 
-    final document = await _firestoreService.getDocument(
-      collection: FirestoreCollections.users,
-      documentId: currentUser.uid,
+    final userDoc = await _firestoreService.getDocument(
+      collection: 'users',
+      documentId: user.uid,
     );
 
-    if (!document.exists || document.data() == null) {
-      throw Exception('User document not found.');
+    if (!userDoc.exists || userDoc.data() == null) {
+      throw Exception('User data not found.');
     }
 
-    return HomeModel.fromMap(document.data()!);
+    final joinedChallenges = await _challengeRepository.getJoinedChallenges();
+
+    final home = HomeModel.fromMap(userDoc.data()!);
+
+    return home.copyWith(joinedChallenges: joinedChallenges);
   }
 }

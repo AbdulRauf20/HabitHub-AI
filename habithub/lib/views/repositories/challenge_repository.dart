@@ -1,5 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 
 import 'package:habithub/models/challenge_preview_model.dart';
 import 'package:habithub/models/today_task_preview_model.dart';
@@ -15,12 +15,12 @@ class ChallengeRepository {
   }) : _firestoreService = firestoreService,
        _auth = auth ?? FirebaseAuth.instance;
 
-  /// Returns the challenges currently joined by the logged-in user.
+  /// Loads all active challenges joined by the current user.
   Future<List<ChallengePreviewModel>> getJoinedChallenges() async {
     final user = _auth.currentUser;
 
     if (user == null) {
-      throw Exception('User is not logged in.');
+      throw Exception('User not logged in.');
     }
 
     final joinedSnapshot = await _firestoreService.getSubCollection(
@@ -29,141 +29,109 @@ class ChallengeRepository {
       subCollection: 'joinedChallenges',
     );
 
-    final challenges = <ChallengePreviewModel>[];
+    final List<ChallengePreviewModel> challenges = [];
 
-    for (final joinedDocument in joinedSnapshot.docs) {
-      try {
-        final joinedData = joinedDocument.data();
+    for (final joinedDoc in joinedSnapshot.docs) {
+      final joinedData = joinedDoc.data();
 
-        final challengeId = joinedData['challengeId'] ?? joinedDocument.id;
+      final challengeId = joinedData['challengeId'] ?? joinedDoc.id;
 
-        final challengeDocument = await _firestoreService.getDocument(
-          collection: 'challenges',
-          documentId: challengeId,
-        );
+      final challengeDoc = await _firestoreService.getDocument(
+        collection: 'challenges',
+        documentId: challengeId,
+      );
 
-        if (!challengeDocument.exists) {
-          debugPrint('Challenge not found: $challengeId');
-          continue;
-        }
-
-        final challengeData = challengeDocument.data()!;
-
-        final todayTasks = await _getTodayTasks(
-          userId: user.uid,
-          challengeId: challengeId,
-          challengeData: challengeData,
-        );
-
-        final preview = ChallengePreviewModel(
-          challengeId: challengeId,
-          title: challengeData['title'] ?? 'Challenge',
-          description: challengeData['description'] ?? '',
-          currentDay: joinedData['currentDay'] ?? 0,
-          totalDays: challengeData['durationDays'] ?? 0,
-          progress: (joinedData['progress'] ?? 0).toDouble(),
-          streak: joinedData['currentStreak'] ?? 0,
-          xpReward: challengeData['rewardXP'] ?? 0,
-          isStarted: joinedData['status'] == 'active',
-          daysRemaining: _calculateDaysRemaining(
-            joinedData['startDate'],
-            challengeData['durationDays'],
-          ),
-          todayTasks: todayTasks,
-        );
-
-        challenges.add(preview);
-      } catch (e) {
-        debugPrint(
-          'Failed to load challenge '
-          '${joinedDocument.id}: $e',
-        );
+      if (!challengeDoc.exists || challengeDoc.data() == null) {
+        continue;
       }
+
+      final challengeData = challengeDoc.data()!;
+
+      final tasks = await _getTodayTasks(
+        challengeId: challengeId,
+        joinedData: joinedData,
+      );
+
+      final totalDays = (challengeData['durationDays'] ?? 30) as int;
+
+      final currentDay = (joinedData['currentDay'] ?? 0) as int;
+
+      final progress = totalDays == 0 ? 0.0 : currentDay / totalDays;
+
+      final startDate = _toDateTime(joinedData['startDate']);
+
+      final isStarted = startDate != null && !startDate.isAfter(DateTime.now());
+
+      final daysRemaining = isStarted
+          ? (totalDays - currentDay).clamp(0, totalDays)
+          : _calculateDaysUntil(startDate);
+
+      challenges.add(
+        ChallengePreviewModel(
+          challengeId: challengeId,
+          title: challengeData['title'] ?? '',
+          description: challengeData['description'] ?? '',
+          currentDay: currentDay,
+          totalDays: totalDays,
+          progress: progress.clamp(0.0, 1.0),
+          streak: (joinedData['currentStreak'] ?? 0) as int,
+          xpReward: (challengeData['rewardXP'] ?? 0) as int,
+          isStarted: isStarted,
+          daysRemaining: daysRemaining,
+          todayTasks: tasks,
+        ),
+      );
     }
 
     return challenges;
   }
 
+  /// Loads today's task definitions and combines them with
+  /// the user's completion state.
   Future<List<TodayTaskPreviewModel>> _getTodayTasks({
-    required String userId,
     required String challengeId,
-    required Map<String, dynamic> challengeData,
+    required Map<String, dynamic> joinedData,
   }) async {
-    final rawTasks = challengeData['tasks'];
+    final taskSnapshot = await _firestoreService.getSubCollection(
+      collection: 'challenges',
+      documentId: challengeId,
+      subCollection: 'tasks',
+    );
 
-    if (rawTasks is! List) {
-      return [];
-    }
+    final completedTasks = Map<String, dynamic>.from(
+      joinedData['todayTaskProgress'] ?? {},
+    );
 
-    final today = _todayKey();
-
-    final progressDocument = await _firestoreService.firestore
-        .collection('users')
-        .doc(userId)
-        .collection('joinedChallenges')
-        .doc(challengeId)
-        .collection('taskProgress')
-        .doc(today)
-        .get();
-
-    final progressData = progressDocument.data();
-
-    final completedTasks = progressData?['completedTasks'];
-
-    final completedMap = <String, bool>{};
-
-    if (completedTasks is Map) {
-      completedTasks.forEach((key, value) {
-        completedMap[key.toString()] = value == true;
-      });
-    }
-
-    return rawTasks.whereType<Map>().map((task) {
-      final taskMap = Map<String, dynamic>.from(task);
-
-      final taskId = taskMap['taskId'] ?? taskMap['id'] ?? '';
+    return taskSnapshot.docs.map((doc) {
+      final data = doc.data();
 
       return TodayTaskPreviewModel(
-        id: taskId,
-        title: taskMap['title'] ?? '',
-        isCompleted: completedMap[taskId] ?? false,
+        id: doc.id,
+        title: data['title'] ?? '',
+        isCompleted: completedTasks[doc.id] == true,
       );
     }).toList();
   }
 
-  int _calculateDaysRemaining(dynamic rawStartDate, int durationDays) {
-    if (rawStartDate == null || durationDays <= 0) {
+  DateTime? _toDateTime(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+
+    if (value is DateTime) {
+      return value;
+    }
+
+    return null;
+  }
+
+  int _calculateDaysUntil(DateTime? startDate) {
+    if (startDate == null) {
       return 0;
     }
 
-    DateTime startDate;
+    final difference = startDate.difference(DateTime.now()).inDays;
 
-    if (rawStartDate is DateTime) {
-      startDate = rawStartDate;
-    } else {
-      startDate = rawStartDate.toDate();
-    }
-
-    final today = DateTime.now();
-
-    final start = DateTime(startDate.year, startDate.month, startDate.day);
-
-    final current = DateTime(today.year, today.month, today.day);
-
-    final elapsed = current.difference(start).inDays;
-
-    final remaining = durationDays - elapsed;
-
-    return remaining < 0 ? 0 : remaining;
-  }
-
-  String _todayKey() {
-    final now = DateTime.now();
-
-    final month = now.month.toString().padLeft(2, '0');
-
-    final day = now.day.toString().padLeft(2, '0');
-
-    return '${now.year}-$month-$day';
+    return difference < 0 ? 0 : difference;
   }
 }

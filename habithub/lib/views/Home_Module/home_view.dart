@@ -20,17 +20,18 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<HomeRepository>(
-          create: (_) =>
-              HomeRepository(firestoreService: FirestoreService.instance),
-        ),
-
         RepositoryProvider<ChallengeRepository>(
           create: (_) =>
               ChallengeRepository(firestoreService: FirestoreService.instance),
         ),
-      ],
 
+        RepositoryProvider<HomeRepository>(
+          create: (context) => HomeRepository(
+            firestoreService: FirestoreService.instance,
+            challengeRepository: context.read<ChallengeRepository>(),
+          ),
+        ),
+      ],
       child: BlocProvider(
         create: (context) => HomeBloc(
           homeRepository: context.read<HomeRepository>(),
@@ -57,53 +58,71 @@ class _HomeViewBody extends StatelessWidget {
             }
 
             if (state is HomeError) {
-              return Center(child: Text(state.message));
-            }
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.error_outline, size: 48),
 
-            if (state is HomeLoaded) {
-              return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<HomeBloc>().add(const RefreshHome());
-                },
+                      const SizedBox(height: 16),
 
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 24),
-
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-
-                      children: [
-                        const AppTopBar(),
-
-                        const SizedBox(height: 10),
-
-                        DashboardCard(home: state.home),
-
-                        const SizedBox(height: 24),
-
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-
-                          child: JoinedChallengesSection(
-                            challenges: state.challenges,
-
-                            onViewAll: () {
-                              // We'll connect navigation
-                              // to ChallengesView later.
-                            },
-                          ),
+                      const Text(
+                        'Unable to load Home',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
-                    ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      Text(state.message, textAlign: TextAlign.center),
+
+                      const SizedBox(height: 20),
+
+                      ElevatedButton(
+                        onPressed: () {
+                          context.read<HomeBloc>().add(const LoadHomeData());
+                        },
+                        child: const Text('Retry'),
+                      ),
+                    ],
                   ),
                 ),
               );
             }
 
-            return const SizedBox();
+            if (state is HomeLoaded) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AppTopBar(),
+
+                    const SizedBox(height: 10),
+
+                    DashboardCard(home: state.home),
+
+                    const SizedBox(height: 24),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: JoinedChallengesSection(
+                        challenges: state.home.joinedChallenges,
+                        onViewAll: () {
+                          // Connect to Challenges page later.
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return const Center(child: CircularProgressIndicator());
           },
         ),
       ),

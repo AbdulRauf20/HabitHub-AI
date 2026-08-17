@@ -37,6 +37,41 @@ class ChallengePreviewModel extends Equatable {
     required this.todayTasks,
   });
 
+  factory ChallengePreviewModel.fromMap(Map<String, dynamic> map) {
+    return ChallengePreviewModel(
+      challengeId: map['challengeId'] ?? '',
+      title: map['title'] ?? '',
+      description: map['description'] ?? '',
+      currentDay: map['currentDay'] ?? 0,
+      totalDays: map['totalDays'] ?? 0,
+      progress: (map['progress'] as num?)?.toDouble() ?? 0.0,
+      streak: map['streak'] ?? 0,
+      xpReward: map['xpReward'] ?? 0,
+      isStarted: map['isStarted'] ?? false,
+      daysRemaining: map['daysRemaining'] ?? 0,
+      todayTasks: (map['todayTasks'] as List<dynamic>?)
+              ?.map((e) => TodayTaskPreviewModel.fromMap(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'challengeId': challengeId,
+      'title': title,
+      'description': description,
+      'currentDay': currentDay,
+      'totalDays': totalDays,
+      'progress': progress,
+      'streak': streak,
+      'xpReward': xpReward,
+      'isStarted': isStarted,
+      'daysRemaining': daysRemaining,
+      'todayTasks': todayTasks.map((task) => task.toMap()).toList(),
+    };
+  }
+
   @override
   List<Object?> get props => [
     challengeId,
