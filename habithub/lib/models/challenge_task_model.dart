@@ -12,17 +12,17 @@ class ChallengeTaskModel extends Equatable {
   final bool isArchived;
   final Timestamp createdAt;
 
-  const ChallengeTaskModel({
+  ChallengeTaskModel({
     required this.id,
     required this.title,
-    required this.description,
-    required this.displayOrder,
-    required this.xpReward,
-    required this.isRequired,
-    required this.estimatedMinutes,
-    required this.isArchived,
-    required this.createdAt,
-  });
+    this.description = '',
+    this.displayOrder = 0,
+    this.xpReward = 0,
+    this.isRequired = true,
+    this.estimatedMinutes = 0,
+    this.isArchived = false,
+    Timestamp? createdAt,
+  }) : createdAt = createdAt ?? Timestamp.now();
 
   ChallengeTaskModel copyWith({
     String? id,
