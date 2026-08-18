@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:habithub/models/challenge_model.dart';
 
 import 'package:habithub/models/challenge_preview_model.dart';
 import 'package:habithub/models/today_task_preview_model.dart';
@@ -100,9 +101,7 @@ class ChallengeRepository {
     await _firestoreService.updateDocument(
       collection: 'users/${user.uid}/joinedChallenges',
       documentId: challengeId,
-      data: {
-        'todayTaskProgress.$taskId': true,
-      },
+      data: {'todayTaskProgress.$taskId': true},
     );
   }
 
@@ -153,5 +152,30 @@ class ChallengeRepository {
     final difference = startDate.difference(DateTime.now()).inDays;
 
     return difference < 0 ? 0 : difference;
+  }
+
+  Future<void> createChallenge({required ChallengeModel challenge}) async {
+    final user = _auth.currentUser;
+
+    if (user == null) {
+      throw Exception('User not logged in.');
+    }
+
+    final challengeRef = FirebaseFirestore.instance
+        .collection('challenges')
+        .doc();
+
+    await challengeRef.set({
+      ...challenge.toMap(),
+      'creatorId': user.uid,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+
+    for (final task in challenge.tasks) {
+      await challengeRef.collection('tasks').doc().set({
+        ...task.toMap(),
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    }
   }
 }
