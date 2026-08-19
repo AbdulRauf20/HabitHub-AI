@@ -24,7 +24,7 @@ class MainNavigationView extends StatelessWidget {
               index: state.currentIndex,
               children: const [
                 HomeView(),
-                ChallengeDetailsView(),
+                ChallengeView(),
                 CreateChallengeView(),
                 CommunityView(),
                 ProfileView(),
