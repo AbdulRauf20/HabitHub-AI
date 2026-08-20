@@ -5,6 +5,7 @@ import 'package:habithub/services/firestore_service.dart';
 import 'package:habithub/views/Home_Module/Profile/Bloc/profile_bloc.dart';
 import 'package:habithub/views/Home_Module/Profile/Bloc/profile_event.dart';
 import 'package:habithub/views/Home_Module/Profile/Bloc/profile_state.dart';
+import 'package:habithub/views/Home_Module/Profile/edit_profile_view.dart';
 import 'package:habithub/views/Home_Module/widgets/app_top_bar.dart';
 import 'package:habithub/views/repositories/profile_repository.dart';
 
@@ -179,7 +180,21 @@ class _ProfileHeader extends StatelessWidget {
 
         OutlinedButton.icon(
           onPressed: () {
-            // Edit profile will be implemented next.
+            final bloc = context.read<ProfileBloc>();
+
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: bloc,
+                  child: EditProfileView(
+                    name: name,
+                    username: username,
+                    bio: bio,
+                    profileImageUrl: profileImageUrl,
+                  ),
+                ),
+              ),
+            );
           },
           icon: const Icon(Icons.edit_outlined),
           label: const Text('Edit Profile'),
