@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:habithub/models/profile_activity_model.dart';
 
 import 'package:habithub/models/profile_model.dart';
 import 'package:habithub/services/firestore_service.dart';
@@ -74,6 +75,64 @@ class ProfileRepository {
       documentId: user.uid,
       data: data,
     );
+  }
+
+  Future<List<ProfileActivityModel>> getActivityHistory() async {
+    final user = _auth.currentUser;
+
+    if (user == null) {
+      throw Exception('User not logged in.');
+    }
+
+    final snapshot = await _firestoreService.getSubCollection(
+      collection: 'users',
+      documentId: user.uid,
+      subCollection: 'activity',
+    );
+
+    return snapshot.docs
+        .map((doc) => ProfileActivityModel.fromMap(doc.id, doc.data()))
+        .toList();
+  }
+
+  Future<void> recordActivity({
+    required DateTime date,
+    int completedTasks = 1,
+  }) async {
+    final user = _auth.currentUser;
+
+    if (user == null) {
+      throw Exception('User not logged in.');
+    }
+
+    final activityDate = DateTime(date.year, date.month, date.day);
+
+    final documentId =
+        '${activityDate.year}-${activityDate.month.toString().padLeft(2, '0')}-${activityDate.day.toString().padLeft(2, '0')}';
+
+    final activityRef = _firestoreService.firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('activity')
+        .doc(documentId);
+
+    await _firestoreService.firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(activityRef);
+
+      if (snapshot.exists) {
+        final current = (snapshot.data()?['completedTasks'] ?? 0) as int;
+
+        transaction.update(activityRef, {
+          'completedTasks': current + completedTasks,
+          'date': Timestamp.fromDate(activityDate),
+        });
+      } else {
+        transaction.set(activityRef, {
+          'date': Timestamp.fromDate(activityDate),
+          'completedTasks': completedTasks,
+        });
+      }
+    });
   }
 
   Future<void> updateActiveBadge(String? badgeId) async {

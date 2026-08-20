@@ -5,16 +5,22 @@ import 'package:habithub/models/challenge_model.dart';
 import 'package:habithub/models/challenge_preview_model.dart';
 import 'package:habithub/models/today_task_preview_model.dart';
 import 'package:habithub/services/firestore_service.dart';
+import 'package:habithub/views/repositories/profile_repository.dart';
 
 class ChallengeRepository {
   final FirestoreService _firestoreService;
   final FirebaseAuth _auth;
+  final ProfileRepository _profileRepository;
 
   ChallengeRepository({
     required FirestoreService firestoreService,
     FirebaseAuth? auth,
+    ProfileRepository? profileRepository,
   }) : _firestoreService = firestoreService,
-       _auth = auth ?? FirebaseAuth.instance;
+       _auth = auth ?? FirebaseAuth.instance,
+       _profileRepository =
+           profileRepository ??
+           ProfileRepository(firestoreService: firestoreService, auth: auth);
 
   /// Loads all active challenges joined by the current user.
   Future<List<ChallengePreviewModel>> getJoinedChallenges() async {
@@ -103,6 +109,8 @@ class ChallengeRepository {
       documentId: challengeId,
       data: {'todayTaskProgress.$taskId': true},
     );
+
+    await _profileRepository.recordActivity(date: DateTime.now());
   }
 
   Future<List<ChallengeModel>> getAvailableChallenges() async {
