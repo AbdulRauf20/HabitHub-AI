@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:habithub/models/challenge_model.dart';
 
 import 'package:habithub/models/challenge_preview_model.dart';
 
@@ -33,4 +34,13 @@ class ChallengeError extends ChallengeState {
 
   @override
   List<Object?> get props => [message];
+}
+
+class AvailableChallengesLoaded extends ChallengeState {
+  final List<ChallengeModel> challenges;
+
+  const AvailableChallengesLoaded({required this.challenges});
+
+  @override
+  List<Object?> get props => [challenges];
 }

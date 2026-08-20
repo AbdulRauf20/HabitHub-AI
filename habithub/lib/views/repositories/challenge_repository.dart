@@ -105,6 +105,61 @@ class ChallengeRepository {
     );
   }
 
+  Future<List<ChallengeModel>> getAvailableChallenges() async {
+    final snapshot = await _firestoreService.getCollection(
+      collection: 'challenges',
+    );
+
+    return snapshot.docs
+        .map((doc) {
+          final data = doc.data();
+
+          return ChallengeModel.fromMap({...data, 'id': doc.id});
+        })
+        .where((challenge) => !challenge.isArchived)
+        .toList();
+  }
+
+  Future<void> joinChallenge({required String challengeId}) async {
+    final user = _auth.currentUser;
+
+    if (user == null) {
+      throw Exception('User not logged in.');
+    }
+
+    final challengeDoc = await _firestoreService.getDocument(
+      collection: 'challenges',
+      documentId: challengeId,
+    );
+
+    if (!challengeDoc.exists || challengeDoc.data() == null) {
+      throw Exception('Challenge not found.');
+    }
+
+    // final challengeData = challengeDoc.data()!;
+
+    final joinedChallengeRef = _firestoreService.firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('joinedChallenges')
+        .doc(challengeId);
+
+    await joinedChallengeRef.set({
+      'challengeId': challengeId,
+      'currentDay': 0,
+      'currentStreak': 0,
+      'todayTaskProgress': {},
+      'startDate': FieldValue.serverTimestamp(),
+      'joinedAt': FieldValue.serverTimestamp(),
+    });
+
+    await _firestoreService.incrementField(
+      collection: 'challenges',
+      documentId: challengeId,
+      field: 'participantsCount',
+    );
+  }
+
   /// Loads today's task definitions and combines them with
   /// the user's completion state.
   Future<List<TodayTaskPreviewModel>> _getTodayTasks({
