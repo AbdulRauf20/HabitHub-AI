@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import 'package:habithub/models/profile_activity_model.dart';
 import 'package:habithub/models/profile_model.dart';
 
 abstract class ProfileState extends Equatable {
@@ -19,20 +20,22 @@ class ProfileLoading extends ProfileState {
 
 class ProfileLoaded extends ProfileState {
   final ProfileModel profile;
+  final List<ProfileActivityModel> activities;
 
-  const ProfileLoaded({required this.profile});
+  const ProfileLoaded({required this.profile, this.activities = const []});
 
   @override
-  List<Object?> get props => [profile];
+  List<Object?> get props => [profile, activities];
 }
 
 class ProfileUpdating extends ProfileState {
   final ProfileModel profile;
+  final List<ProfileActivityModel> activities;
 
-  const ProfileUpdating({required this.profile});
+  const ProfileUpdating({required this.profile, this.activities = const []});
 
   @override
-  List<Object?> get props => [profile];
+  List<Object?> get props => [profile, activities];
 }
 
 class ProfileError extends ProfileState {

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:habithub/models/profile_activity_model.dart';
 
 class ProfileModel extends Equatable {
   final String id;
@@ -22,6 +23,10 @@ class ProfileModel extends Equatable {
   final List<String> ownedBadgeIds;
   final String? activeBadgeId;
 
+  // Daily activity:
+  // key = date, e.g. "2026-08-20"
+  // value = number of completed tasks that day
+  final List<ProfileActivityModel> activities;
   final Timestamp createdAt;
 
   const ProfileModel({
@@ -39,6 +44,7 @@ class ProfileModel extends Equatable {
     required this.leaderboardRank,
     required this.ownedBadgeIds,
     this.activeBadgeId,
+    required this.activities,
     required this.createdAt,
   });
 
@@ -58,6 +64,7 @@ class ProfileModel extends Equatable {
     leaderboardRank,
     ownedBadgeIds,
     activeBadgeId,
+    activities,
     createdAt,
   ];
 }

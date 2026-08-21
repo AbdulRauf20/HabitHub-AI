@@ -6,6 +6,7 @@ import 'package:habithub/views/Home_Module/Profile/Bloc/profile_bloc.dart';
 import 'package:habithub/views/Home_Module/Profile/Bloc/profile_event.dart';
 import 'package:habithub/views/Home_Module/Profile/Bloc/profile_state.dart';
 import 'package:habithub/views/Home_Module/Profile/edit_profile_view.dart';
+import 'package:habithub/views/Home_Module/Profile/profile_widgets/activity_grid.dart';
 import 'package:habithub/views/Home_Module/widgets/app_top_bar.dart';
 import 'package:habithub/views/repositories/profile_repository.dart';
 
@@ -90,8 +91,7 @@ class _ProfileBody extends StatelessWidget {
 
                           const SizedBox(height: 12),
 
-                          const _ActivityPlaceholder(),
-
+                          ActivityGrid(activities: profile.activities),
                           const SizedBox(height: 24),
 
                           const _SectionTitle(title: 'Analytics'),
@@ -318,6 +318,7 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 class _ActivityPlaceholder extends StatelessWidget {
   const _ActivityPlaceholder();
 

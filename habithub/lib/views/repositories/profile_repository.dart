@@ -29,6 +29,16 @@ class ProfileRepository {
 
     final data = document.data() ?? {};
 
+    final activitySnapshot = await _firestoreService.getSubCollection(
+      collection: 'users',
+      documentId: user.uid,
+      subCollection: 'activity',
+    );
+
+    final activities = activitySnapshot.docs.map((doc) {
+      return ProfileActivityModel.fromMap(doc.id, doc.data());
+    }).toList();
+
     return ProfileModel(
       id: user.uid,
       name: data['name'] ?? user.displayName ?? '',
@@ -44,6 +54,7 @@ class ProfileRepository {
       leaderboardRank: (data['leaderboardRank'] ?? 0) as int,
       ownedBadgeIds: List<String>.from(data['ownedBadgeIds'] ?? []),
       activeBadgeId: data['activeBadgeId'],
+      activities: activities,
       createdAt: data['createdAt'] ?? Timestamp.now(),
     );
   }

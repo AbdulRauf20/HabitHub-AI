@@ -8,10 +8,9 @@ import 'profile_state.dart';
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final ProfileRepository _repository;
 
-  ProfileBloc({
-    required ProfileRepository repository,
-  })  : _repository = repository,
-        super(const ProfileInitial()) {
+  ProfileBloc({required ProfileRepository repository})
+    : _repository = repository,
+      super(const ProfileInitial()) {
     on<LoadProfile>(_onLoadProfile);
     on<RefreshProfile>(_onRefreshProfile);
     on<UpdateProfile>(_onUpdateProfile);
@@ -26,8 +25,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
     try {
       final profile = await _repository.getProfile();
+      final activities = await _repository.getActivityHistory();
 
-      emit(ProfileLoaded(profile: profile));
+      emit(ProfileLoaded(profile: profile, activities: activities));
     } catch (e) {
       emit(ProfileError(message: e.toString()));
     }
@@ -50,7 +50,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       return;
     }
 
-    emit(ProfileUpdating(profile: currentState.profile));
+    emit(
+      ProfileUpdating(
+        profile: currentState.profile,
+        activities: currentState.activities,
+      ),
+    );
 
     try {
       await _repository.updateProfile(
@@ -62,7 +67,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
       final updatedProfile = await _repository.getProfile();
 
-      emit(ProfileLoaded(profile: updatedProfile));
+      emit(
+        ProfileLoaded(
+          profile: updatedProfile,
+          activities: currentState.activities,
+        ),
+      );
     } catch (e) {
       emit(ProfileError(message: e.toString()));
     }
@@ -78,14 +88,24 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       return;
     }
 
-    emit(ProfileUpdating(profile: currentState.profile));
+    emit(
+      ProfileUpdating(
+        profile: currentState.profile,
+        activities: currentState.activities,
+      ),
+    );
 
     try {
       await _repository.updateActiveBadge(event.badgeId);
 
       final updatedProfile = await _repository.getProfile();
 
-      emit(ProfileLoaded(profile: updatedProfile));
+      emit(
+        ProfileLoaded(
+          profile: updatedProfile,
+          activities: currentState.activities,
+        ),
+      );
     } catch (e) {
       emit(ProfileError(message: e.toString()));
     }
