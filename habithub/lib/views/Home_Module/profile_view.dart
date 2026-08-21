@@ -87,10 +87,6 @@ class _ProfileBody extends StatelessWidget {
 
                           const SizedBox(height: 24),
 
-                          const _SectionTitle(title: 'Activity'),
-
-                          const SizedBox(height: 12),
-
                           ActivityGrid(activities: profile.activities),
                           const SizedBox(height: 24),
 
