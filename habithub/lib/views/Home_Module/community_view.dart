@@ -6,6 +6,7 @@ import 'package:habithub/services/firestore_service.dart';
 import 'package:habithub/views/Home_Module/Community/Bloc/community_bloc.dart';
 import 'package:habithub/views/Home_Module/Community/Bloc/community_event.dart';
 import 'package:habithub/views/Home_Module/Community/Bloc/community_state.dart';
+import 'package:habithub/views/Home_Module/Community/community_challenge_details_view.dart';
 import 'package:habithub/views/Home_Module/widgets/app_top_bar.dart';
 import 'package:habithub/views/repositories/community_repository.dart';
 
@@ -120,9 +121,19 @@ class _ChallengeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<CommunityBloc>();
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Column(
+   return Card(
+  clipBehavior: Clip.antiAlias,
+  child: InkWell(
+    onTap: () {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => CommunityChallengeDetailsView(
+            challenge: challenge,
+          ),
+        ),
+      );
+    },
+    child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _CreatorHeader(
@@ -239,7 +250,7 @@ class _ChallengeCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }
 
