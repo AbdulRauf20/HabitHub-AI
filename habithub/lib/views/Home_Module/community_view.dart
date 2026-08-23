@@ -6,7 +6,6 @@ import 'package:habithub/services/firestore_service.dart';
 import 'package:habithub/views/Home_Module/Community/Bloc/community_bloc.dart';
 import 'package:habithub/views/Home_Module/Community/Bloc/community_event.dart';
 import 'package:habithub/views/Home_Module/Community/Bloc/community_state.dart';
-import 'package:habithub/views/Home_Module/Community/community_challenge_details_view.dart';
 import 'package:habithub/views/Home_Module/widgets/app_top_bar.dart';
 import 'package:habithub/views/repositories/community_repository.dart';
 
@@ -20,8 +19,9 @@ class CommunityView extends StatelessWidget {
           CommunityRepository(firestoreService: FirestoreService.instance),
       child: BlocProvider(
         create: (context) =>
-            CommunityBloc(repository: context.read<CommunityRepository>())
-              ..add(const LoadCommunity()),
+            CommunityBloc(
+              repository: context.read<CommunityRepository>(),
+            )..add(const LoadCommunity()),
         child: const _CommunityBody(),
       ),
     );
@@ -43,64 +43,52 @@ class _CommunityBody extends StatelessWidget {
               child: BlocBuilder<CommunityBloc, CommunityState>(
                 builder: (context, state) {
                   if (state is CommunityLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
                   }
 
                   if (state is CommunityError) {
                     return Center(
                       child: Padding(
                         padding: const EdgeInsets.all(24),
-                        child: Text(state.message, textAlign: TextAlign.center),
+                        child: Text(
+                          state.message,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     );
                   }
 
                   if (state is CommunityLoaded) {
+                    if (state.challenges.isEmpty) {
+                      return const Center(
+                        child: Text('No public challenges yet.'),
+                      );
+                    }
+
                     return RefreshIndicator(
                       onRefresh: () async {
                         context.read<CommunityBloc>().add(
                           const RefreshCommunity(),
                         );
                       },
-                      child: ListView(
+                      child: ListView.separated(
                         padding: const EdgeInsets.all(16),
-                        children: [
-                          const Text(
-                            'Community',
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-
-                          const SizedBox(height: 6),
-
-                          Text(
-                            'Discover challenges and see what others are working on.',
-                            style: TextStyle(
-                              color: Theme.of(
-                                context,
-                              ).textTheme.bodyMedium?.color,
-                            ),
-                          ),
-
-                          const SizedBox(height: 20),
-
-                          if (state.challenges.isEmpty) const _EmptyCommunity(),
-
-                          ...state.challenges.map(
-                            (challenge) => Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: _ChallengeCard(challenge: challenge),
-                            ),
-                          ),
-                        ],
+                        itemCount: state.challenges.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: 14),
+                        itemBuilder: (context, index) {
+                          return _CommunityChallengeCard(
+                            challenge: state.challenges[index],
+                          );
+                        },
                       ),
                     );
                   }
 
                   return const Center(
-                    child: Text('No community data available.'),
+                    child: Text('Community'),
                   );
                 },
               ),
@@ -112,55 +100,97 @@ class _CommunityBody extends StatelessWidget {
   }
 }
 
-class _ChallengeCard extends StatelessWidget {
+class _CommunityChallengeCard extends StatelessWidget {
   final CommunityChallengeModel challenge;
 
-  const _ChallengeCard({required this.challenge});
+  const _CommunityChallengeCard({
+    required this.challenge,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<CommunityBloc>();
-
-   return Card(
-  clipBehavior: Clip.antiAlias,
-  child: InkWell(
-    onTap: () {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => CommunityChallengeDetailsView(
-            challenge: challenge,
-          ),
-        ),
-      );
-    },
-    child: Column(
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _CreatorHeader(
-            challenge: challenge,
-            onFollow: challenge.creatorId.isEmpty
-                ? null
-                : () {
-                    bloc.add(
-                      ToggleCommunityFollow(creatorId: challenge.creatorId),
-                    );
-                  },
+          // Creator
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 12, 10),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundImage:
+                      challenge.creatorProfileImageUrl.isNotEmpty
+                      ? NetworkImage(
+                          challenge.creatorProfileImageUrl,
+                        )
+                      : null,
+                  child: challenge.creatorProfileImageUrl.isEmpty
+                      ? const Icon(Icons.person_outline)
+                      : null,
+                ),
+
+                const SizedBox(width: 10),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        challenge.creatorName.isEmpty
+                            ? 'Unknown User'
+                            : challenge.creatorName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      if (challenge.creatorUsername.isNotEmpty)
+                        Text(
+                          '@${challenge.creatorUsername}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                    ],
+                  ),
+                ),
+
+                TextButton(
+                  onPressed: challenge.isFollowingCreator
+                      ? null
+                      : () {
+                          context.read<CommunityBloc>().add(
+                            ToggleCommunityCreatorFollow(
+                              creatorId: challenge.creatorId,
+                            ),
+                          );
+                        },
+                  child: Text(
+                    challenge.isFollowingCreator
+                        ? 'Following'
+                        : 'Follow',
+                  ),
+                ),
+              ],
+            ),
           ),
 
+          // Image
           if (challenge.imageUrl.isNotEmpty)
             AspectRatio(
-              aspectRatio: 16 / 8,
+              aspectRatio: 16 / 9,
               child: Image.network(
                 challenge.imageUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) {
-                  return const _ImagePlaceholder();
+                  return const SizedBox.shrink();
                 },
               ),
             ),
 
+          // Challenge content
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -172,139 +202,81 @@ class _ChallengeCard extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
 
                 Text(
                   challenge.description,
-                  maxLines: 4,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
 
-                Row(
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     _InfoChip(
                       icon: Icons.calendar_today_outlined,
-                      text: '${challenge.durationDays} days',
+                      label: '${challenge.durationDays} days',
                     ),
-
-                    const SizedBox(width: 8),
-
                     _InfoChip(
                       icon: Icons.star_outline,
-                      text: '${challenge.rewardXP} XP',
+                      label: '${challenge.rewardXP} XP',
                     ),
-
-                    const SizedBox(width: 8),
-
                     _InfoChip(
                       icon: Icons.people_outline,
-                      text: '${challenge.participantsCount}',
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        bloc.add(
-                          ToggleChallengeLike(challengeId: challenge.id),
-                        );
-                      },
-                      icon: Icon(
-                        challenge.isLiked
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                      ),
-                    ),
-
-                    Text('${challenge.likesCount}'),
-
-                    const Spacer(),
-
-                    SizedBox(
-                      height: 42,
-                      child: FilledButton(
-                        onPressed: challenge.isJoined
-                            ? null
-                            : () {
-                                bloc.add(
-                                  JoinCommunityChallenge(
-                                    challengeId: challenge.id,
-                                  ),
-                                );
-                              },
-                        child: Text(
-                          challenge.isJoined ? 'Joined' : 'Join Challenge',
-                        ),
-                      ),
+                      label: '${challenge.participantsCount}',
                     ),
                   ],
                 ),
               ],
             ),
           ),
-        ],
-      ),
-    ));
-  }
-}
 
-class _CreatorHeader extends StatelessWidget {
-  final CommunityChallengeModel challenge;
-  final VoidCallback? onFollow;
-
-  const _CreatorHeader({required this.challenge, required this.onFollow});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 14, 12, 12),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 21,
-            backgroundImage: challenge.creatorProfileImageUrl.isNotEmpty
-                ? NetworkImage(challenge.creatorProfileImageUrl)
-                : null,
-            child: challenge.creatorProfileImageUrl.isEmpty
-                ? const Icon(Icons.person_outline)
-                : null,
-          ),
-
-          const SizedBox(width: 10),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          // Actions
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+            child: Row(
               children: [
-                Text(
-                  challenge.creatorName.isEmpty
-                      ? 'Unknown User'
-                      : challenge.creatorName,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                IconButton(
+                  onPressed: () {
+                    context.read<CommunityBloc>().add(
+                      ToggleCommunityChallengeLike(
+                        challengeId: challenge.id,
+                      ),
+                    );
+                  },
+                  icon: Icon(
+                    challenge.isLiked
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                  ),
                 ),
 
-                if (challenge.creatorUsername.isNotEmpty)
-                  Text(
-                    '@${challenge.creatorUsername}',
-                    style: const TextStyle(fontSize: 12),
+                Text('${challenge.likesCount}'),
+
+                const SizedBox(width: 8),
+
+                Expanded(
+                  child: FilledButton(
+                    onPressed: challenge.isJoined
+                        ? null
+                        : () {
+                            context.read<CommunityBloc>().add(
+                              JoinCommunityChallenge(
+                                challengeId: challenge.id,
+                              ),
+                            );
+                          },
+                    child: Text(
+                      challenge.isJoined ? 'Joined' : 'Join Challenge',
+                    ),
                   ),
+                ),
               ],
             ),
           ),
-
-          if (challenge.creatorId.isNotEmpty)
-            TextButton(
-              onPressed: onFollow,
-              child: Text(
-                challenge.isFollowingCreator ? 'Following' : 'Follow',
-              ),
-            ),
         ],
       ),
     );
@@ -313,86 +285,37 @@ class _CreatorHeader extends StatelessWidget {
 
 class _InfoChip extends StatelessWidget {
   final IconData icon;
-  final String text;
+  final String label;
 
-  const _InfoChip({required this.icon, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Flexible(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 14),
-
-            const SizedBox(width: 4),
-
-            Flexible(
-              child: Text(
-                text,
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ImagePlaceholder extends StatelessWidget {
-  const _ImagePlaceholder();
+  const _InfoChip({
+    required this.icon,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150,
-      color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
-      child: const Center(child: Icon(Icons.image_outlined, size: 40)),
-    );
-  }
-}
-
-class _EmptyCommunity extends StatelessWidget {
-  const _EmptyCommunity();
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          children: [
-            const Icon(Icons.groups_outlined, size: 48),
-
-            const SizedBox(height: 12),
-
-            const Text(
-              'No challenges yet',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-
-            const SizedBox(height: 6),
-
-            Text(
-              'Public challenges created by the community will appear here.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Theme.of(context).textTheme.bodyMedium?.color,
-              ),
-            ),
-          ],
-        ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 9,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context)
+            .colorScheme
+            .primary
+            .withOpacity(0.08),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12),
+          ),
+        ],
       ),
     );
   }
