@@ -41,3 +41,25 @@ class ToggleCommunityFollow extends CommunityEvent {
   @override
   List<Object?> get props => [creatorId];
 }
+
+class ToggleCommunityChallengeLike extends CommunityEvent {
+  final String challengeId;
+
+  const ToggleCommunityChallengeLike({
+    required this.challengeId,
+  });
+
+  @override
+  List<Object?> get props => [challengeId];
+}
+
+class ToggleCommunityCreatorFollow extends CommunityEvent {
+  final String creatorId;
+
+  const ToggleCommunityCreatorFollow({
+    required this.creatorId,
+  });
+
+  @override
+  List<Object?> get props => [creatorId];
+}
