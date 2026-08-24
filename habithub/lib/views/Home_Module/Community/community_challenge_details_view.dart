@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:habithub/models/community_challenge_model.dart';
+import 'package:habithub/views/Home_Module/Community/Bloc/community_bloc.dart';
+import 'package:habithub/views/Home_Module/Community/Bloc/community_event.dart';
 
 class CommunityChallengeDetailsView extends StatelessWidget {
   final CommunityChallengeModel challenge;
@@ -117,12 +120,14 @@ class CommunityChallengeDetailsView extends StatelessWidget {
               width: double.infinity,
               child: FilledButton(
                 onPressed: challenge.isJoined
-                    ? null
-                    : () {
-                        // Joining is already handled by the
-                        // CommunityBloc from the feed.
-                        Navigator.pop(context);
-                      },
+    ? null
+    : () {
+        context.read<CommunityBloc>().add(
+          JoinCommunityChallenge(
+            challengeId: challenge.id,
+          ),
+        );
+      },
                 child: Text(
                   challenge.isJoined ? 'Already Joined' : 'Join Challenge',
                 ),
