@@ -27,15 +27,12 @@ class _SplashScreenViewState extends State<SplashScreenView> {
   @override
   void initState() {
     super.initState();
-
-    // Loading Animation
     timer = Timer.periodic(const Duration(milliseconds: 400), (timer) {
       setState(() {
         filledBoxes = (filledBoxes + 1) % 5;
       });
     });
 
-    // Check auth status after splash animation
     Timer(const Duration(seconds: 3), () {
       if (!mounted) return;
 
