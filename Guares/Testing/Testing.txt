@@ -1,0 +1,8 @@
+1 signup 
+2 verify email 
+3 complete profile
+4 forgot password
+5 reset password
+6 google auth 
+7 facebook auth
+8 apple auth 
