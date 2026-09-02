@@ -37,17 +37,17 @@ class _WelcomeViewState extends State<WelcomeView> {
                     text: const TextSpan(
                       children: [
                         TextSpan(
-                          text: 'Habit',
+                          text: 'G',
                           style: TextStyle(
-                            color: AppColors.textPrimary,
+                            color: AppColors.primary,
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         TextSpan(
-                          text: 'Hub',
+                          text: 'uares',
                           style: TextStyle(
-                            color: AppColors.primary,
+                            color: AppColors.textPrimary,
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
                           ),

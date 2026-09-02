@@ -123,7 +123,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
     DialogHelper.showLoading(
       context,
       title: "Creating Your Profile",
-      message: "Please wait while we prepare your HabitHub account...",
+      message: "Please wait while we prepare your Guares account...",
     );
 
     try {
@@ -166,7 +166,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
 
       DialogHelper.showSuccess(
         context,
-        title: "Welcome to HabitHub!",
+        title: "Welcome to Guares!",
         message: "Your profile has been created successfully.",
         buttonText: "Start My Journey",
         onPressed: () {

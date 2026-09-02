@@ -208,7 +208,7 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                         ),
                         TextSpan(
-                          text: "HabitHub",
+                          text: "Guares",
                           style: TextStyle(
                             color: AppColors.primary,
                             fontSize: 34,

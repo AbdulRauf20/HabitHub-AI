@@ -114,7 +114,7 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       const SizedBox(width: 8),
                       const Text(
-                        "HabitHub",
+                        "Guares",
                         style: TextStyle(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.bold,
@@ -409,7 +409,7 @@ class _LoginViewState extends State<LoginView> {
                       text: const TextSpan(
                         children: [
                           TextSpan(
-                            text: "New to HabitHub? ",
+                            text: "New to Guares? ",
                             style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 15,
